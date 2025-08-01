@@ -468,8 +468,7 @@ a.component-link:hover h3 {
     margin: 0 auto;
 }
 
-.demo-gif,
-.demo-video {
+.demo-gif {
     width: 100%;
     height: auto;
     display: block;

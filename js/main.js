@@ -34,53 +34,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Play button functionality for video demo
+    // Play button functionality for GIF demo
     const playButton = document.querySelector('.play-button');
     const demoPoster = document.querySelector('.demo-poster');
-    const demoVideo = document.querySelector('video.demo-video');
+    const demoGif = document.querySelector('.demo-gif');
     
-    if (playButton && demoPoster && demoVideo) {
+    if (playButton && demoPoster && demoGif) {
         playButton.addEventListener('click', function() {
             // Hide poster and play button
             demoPoster.style.display = 'none';
             playButton.style.display = 'none';
             
-            // Check if video can play
-            const playPromise = demoVideo.play();
+            // Show and start the GIF
+            demoGif.style.display = 'block';
             
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // Video started successfully
-                    demoVideo.style.display = 'block';
-                    demoVideo.controls = true;
-                }).catch((error) => {
-                    // Video failed to play, fallback to GIF
-                    console.log('Video playback failed, falling back to GIF');
-                    const fallbackGif = document.createElement('img');
-                    fallbackGif.src = 'assets/images/dime_ai_poc_1.gif';
-                    fallbackGif.className = 'demo-gif';
-                    fallbackGif.style.display = 'block';
-                    demoVideo.style.display = 'none';
-                    demoVideo.parentNode.insertBefore(fallbackGif, demoVideo);
-                });
-            } else {
-                // Old browsers, just show the video
-                demoVideo.style.display = 'block';
-                demoVideo.controls = true;
-            }
+            // Force reload the GIF to start from beginning
+            const gifSrc = demoGif.src;
+            demoGif.src = '';
+            demoGif.src = gifSrc + '?t=' + new Date().getTime();
             
-            // Add a replay button when video ends
-            demoVideo.addEventListener('ended', function() {
+            // Add a replay button after GIF loads
+            setTimeout(() => {
                 const replayBtn = document.createElement('button');
                 replayBtn.className = 'replay-button';
                 replayBtn.innerHTML = '↻ Replay';
                 replayBtn.addEventListener('click', function() {
-                    demoVideo.currentTime = 0;
-                    demoVideo.play();
-                    replayBtn.remove();
+                    const newSrc = gifSrc + '?t=' + new Date().getTime();
+                    demoGif.src = '';
+                    demoGif.src = newSrc;
                 });
                 document.getElementById('demo-container').appendChild(replayBtn);
-            });
+            }, 1000);
         });
     }
     
