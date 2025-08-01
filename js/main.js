@@ -34,37 +34,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Play button functionality for GIF demo
+    // Play button functionality for video demo
     const playButton = document.querySelector('.play-button');
     const demoPoster = document.querySelector('.demo-poster');
-    const demoGif = document.querySelector('.demo-gif');
+    const demoVideo = document.querySelector('video.demo-video');
     
-    if (playButton && demoPoster && demoGif) {
+    if (playButton && demoPoster && demoVideo) {
         playButton.addEventListener('click', function() {
             // Hide poster and play button
             demoPoster.style.display = 'none';
             playButton.style.display = 'none';
             
-            // Show and start the GIF
-            demoGif.style.display = 'block';
+            // Show and play the video
+            demoVideo.style.display = 'block';
+            demoVideo.play();
             
-            // Force reload the GIF to start from beginning
-            const gifSrc = demoGif.src;
-            demoGif.src = '';
-            demoGif.src = gifSrc + '?t=' + new Date().getTime();
+            // Add video controls after starting
+            demoVideo.controls = true;
             
-            // Add a replay button after GIF loads
-            setTimeout(() => {
+            // Add a replay button when video ends
+            demoVideo.addEventListener('ended', function() {
                 const replayBtn = document.createElement('button');
                 replayBtn.className = 'replay-button';
                 replayBtn.innerHTML = '↻ Replay';
                 replayBtn.addEventListener('click', function() {
-                    const newSrc = gifSrc + '?t=' + new Date().getTime();
-                    demoGif.src = '';
-                    demoGif.src = newSrc;
+                    demoVideo.currentTime = 0;
+                    demoVideo.play();
+                    replayBtn.remove();
                 });
                 document.getElementById('demo-container').appendChild(replayBtn);
-            }, 1000);
+            });
         });
     }
     
