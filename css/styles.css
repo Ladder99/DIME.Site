@@ -1048,11 +1048,18 @@ footer {
     
     .platform-grid {
         grid-template-columns: 1fr;
-        grid-template-rows: auto;
+        grid-template-rows: repeat(6, auto);
+        gap: var(--space-md);
     }
     
     .platform-grid .component {
         grid-column: 1 !important;
+        grid-row: auto !important;
+    }
+    
+    /* Remove the separator line on mobile */
+    .platform-grid::after {
+        display: none;
     }
     
     .value-grid,
