@@ -131,5 +131,42 @@ if (window.location.pathname.includes('platform.html')) {
                 });
             }
         });
+        
+        // Lightbox functionality
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = lightbox.querySelector('.lightbox-image');
+        const lightboxCaption = lightbox.querySelector('.lightbox-caption');
+        const lightboxClose = lightbox.querySelector('.lightbox-close');
+        
+        // Add click handlers to all images in component sections
+        const componentImages = document.querySelectorAll('.component-visual img, .monitoring-thumb');
+        
+        componentImages.forEach(img => {
+            img.addEventListener('click', function() {
+                lightbox.classList.add('active');
+                lightboxImage.src = this.src;
+                lightboxImage.alt = this.alt;
+                lightboxCaption.textContent = this.alt;
+            });
+        });
+        
+        // Close lightbox when clicking close button
+        lightboxClose.addEventListener('click', function() {
+            lightbox.classList.remove('active');
+        });
+        
+        // Close lightbox when clicking outside the image
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox || e.target === lightboxClose) {
+                lightbox.classList.remove('active');
+            }
+        });
+        
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                lightbox.classList.remove('active');
+            }
+        });
     });
 }
