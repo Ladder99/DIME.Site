@@ -45,12 +45,29 @@ document.addEventListener('DOMContentLoaded', function() {
             demoPoster.style.display = 'none';
             playButton.style.display = 'none';
             
-            // Show and play the video
-            demoVideo.style.display = 'block';
-            demoVideo.play();
+            // Check if video can play
+            const playPromise = demoVideo.play();
             
-            // Add video controls after starting
-            demoVideo.controls = true;
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Video started successfully
+                    demoVideo.style.display = 'block';
+                    demoVideo.controls = true;
+                }).catch((error) => {
+                    // Video failed to play, fallback to GIF
+                    console.log('Video playback failed, falling back to GIF');
+                    const fallbackGif = document.createElement('img');
+                    fallbackGif.src = 'assets/images/dime_ai_poc_1.gif';
+                    fallbackGif.className = 'demo-gif';
+                    fallbackGif.style.display = 'block';
+                    demoVideo.style.display = 'none';
+                    demoVideo.parentNode.insertBefore(fallbackGif, demoVideo);
+                });
+            } else {
+                // Old browsers, just show the video
+                demoVideo.style.display = 'block';
+                demoVideo.controls = true;
+            }
             
             // Add a replay button when video ends
             demoVideo.addEventListener('ended', function() {
