@@ -8,11 +8,11 @@
 }
 
 :root {
-    /* Colors */
-    --primary: #2563EB;
-    --secondary: #7C3AED;
-    --accent: #F59E0B;
-    --success: #10B981;
+    /* Colors - Aligned with DIME logo */
+    --primary: #0E7490;        /* Deep teal from logo */
+    --secondary: #1E3A8A;      /* Navy blue from logo */
+    --accent: #991B1B;         /* Burgundy from logo */
+    --success: #0E7490;        /* Using teal for success */
     --neutral-50: #F8FAFC;
     --neutral-100: #F1F5F9;
     --neutral-200: #E2E8F0;
@@ -23,6 +23,11 @@
     --neutral-700: #334155;
     --neutral-800: #1E293B;
     --neutral-900: #0F172A;
+    
+    /* Additional logo colors */
+    --teal-light: #14B8A6;
+    --blue-dark: #1E3A8A;
+    --silver: #9CA3AF;
     
     /* Typography */
     --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif;
@@ -157,7 +162,7 @@ h6 { font-size: 1rem; }
 }
 
 .btn-primary:hover {
-    background: #1D4ED8;
+    background: #0C5F7A;
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
@@ -324,7 +329,16 @@ h6 { font-size: 1rem; }
 .component-icon {
     font-size: 3rem;
     margin-bottom: var(--space-md);
+    color: var(--primary);
+    line-height: 1;
 }
+
+.component.foundation:nth-child(1) .component-icon { color: var(--primary); }
+.component.foundation:nth-child(2) .component-icon { color: var(--secondary); }
+.component.foundation:nth-child(3) .component-icon { color: var(--accent); }
+.component.intelligence:nth-child(4) .component-icon { color: var(--teal-light); }
+.component.intelligence:nth-child(5) .component-icon { color: var(--blue-dark); }
+.component.intelligence:nth-child(6) .component-icon { color: var(--primary); }
 
 .component h3 {
     font-size: 1.125rem;
@@ -359,7 +373,13 @@ h6 { font-size: 1rem; }
 .value-icon {
     font-size: 2.5rem;
     margin-bottom: var(--space-md);
+    color: var(--primary);
 }
+
+.value-card:nth-child(1) .value-icon { color: var(--primary); }
+.value-card:nth-child(2) .value-icon { color: var(--secondary); }
+.value-card:nth-child(3) .value-icon { color: var(--teal-light); }
+.value-card:nth-child(4) .value-icon { color: var(--accent); }
 
 .value-card h3 {
     font-size: 1.25rem;
@@ -449,14 +469,15 @@ h6 { font-size: 1rem; }
     background: var(--primary);
     color: white;
     border: none;
-    border-radius: 50%;
+    border-radius: 0;
     font-size: 2rem;
     cursor: pointer;
     transition: all 0.2s;
+    clip-path: polygon(25% 0%, 100% 50%, 25% 100%, 0% 75%, 0% 25%);
 }
 
 .play-button:hover {
-    background: #1D4ED8;
+    background: var(--secondary);
     transform: translate(-50%, -50%) scale(1.1);
 }
 
@@ -482,10 +503,11 @@ h6 { font-size: 1rem; }
 
 /* CTA Section */
 .cta {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
     color: white;
     padding: var(--space-3xl) 0;
     text-align: center;
+    position: relative;
 }
 
 .cta h2 {
@@ -557,6 +579,22 @@ footer {
     color: white;
     padding: var(--space-3xl) 0;
     text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Geometric pattern overlay inspired by logo */
+.platform-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(45deg, transparent 48%, rgba(255,255,255,0.05) 50%, transparent 52%),
+        linear-gradient(-45deg, transparent 48%, rgba(255,255,255,0.05) 50%, transparent 52%);
+    background-size: 30px 30px;
 }
 
 .page-title {
@@ -696,11 +734,11 @@ footer {
 }
 
 .feature-block li::before {
-    content: "•";
+    content: "▸";
     position: absolute;
     left: calc(-1 * var(--space-lg));
     color: var(--primary);
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .stats-row {
