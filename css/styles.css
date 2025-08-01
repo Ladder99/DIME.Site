@@ -674,6 +674,14 @@ footer {
     font-size: 2.5rem;
 }
 
+/* Match component icon colors to home page */
+#data-collection .component-icon { color: var(--primary); }
+#system-integration .component-icon { color: var(--secondary); }
+#operational-monitoring .component-icon { color: var(--accent); }
+#usecase-builder .component-icon { color: var(--teal-light); }
+#analytics-workbench .component-icon { color: var(--blue-dark); }
+#htm-engine .component-icon { color: var(--primary); }
+
 .component-content {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -1035,7 +1043,7 @@ footer {
 
 @media (max-width: 768px) {
     .nav-menu {
-        display: none;
+        display: flex !important;
     }
     
     .nav-cta {
