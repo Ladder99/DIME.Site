@@ -120,13 +120,22 @@ if (window.location.pathname.includes('platform.html')) {
         const componentSections = document.querySelectorAll('.component-section');
         
         componentSections.forEach(section => {
-            // Set initial collapsed state
-            section.classList.add('collapsed');
             const content = section.querySelector('.component-content');
-            
             const header = section.querySelector('.component-header');
+            
+            // Set initial collapsed state only if not coming from a hash link
+            if (!window.location.hash || window.location.hash.substring(1) !== section.id) {
+                section.classList.add('collapsed');
+                if (content) {
+                    content.style.maxHeight = '0';
+                }
+            }
+            
             if (header && content) {
-                header.addEventListener('click', function() {
+                header.addEventListener('click', function(e) {
+                    // Prevent duplicate handling if already being handled by navigation
+                    if (e.defaultPrevented) return;
+                    
                     if (section.classList.contains('collapsed')) {
                         // Expanding
                         section.classList.remove('collapsed');

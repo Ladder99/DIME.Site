@@ -4,8 +4,20 @@ document.addEventListener('DOMContentLoaded', function() {
     function expandComponent(componentId) {
         const component = document.getElementById(componentId);
         if (component) {
-            // Remove collapsed class to expand
+            const content = component.querySelector('.component-content');
+            
+            // Remove collapsed class and set proper max-height
             component.classList.remove('collapsed');
+            if (content) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                
+                // After animation, remove max-height to allow content to grow
+                setTimeout(() => {
+                    if (!component.classList.contains('collapsed')) {
+                        content.style.maxHeight = 'none';
+                    }
+                }, 300);
+            }
             
             // Scroll to the component with offset for header
             const headerOffset = 100;
@@ -54,15 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle hash changes
     window.addEventListener('hashchange', handleHashNavigation);
     
-    // Make all component headers clickable to toggle
-    const componentHeaders = document.querySelectorAll('.component-header');
-    componentHeaders.forEach(header => {
-        header.addEventListener('click', function(e) {
-            // Don't toggle if clicking from a direct link
-            if (!window.location.hash || window.location.hash.substring(1) !== header.parentElement.id) {
-                const section = this.parentElement;
-                section.classList.toggle('collapsed');
-            }
-        });
-    });
+    // Remove the duplicate click handlers since main.js already handles them
+    // We only need to handle the navigation from home page
 });
