@@ -687,9 +687,9 @@ footer {
     grid-template-columns: 1fr 2fr;
     gap: var(--space-2xl);
     padding: 0 var(--space-xl) var(--space-xl) var(--space-xl);
-    max-height: 1000px;
     opacity: 1;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, padding 0.3s ease;
+    overflow: hidden;
 }
 
 .component-section.collapsed .component-content {
@@ -697,6 +697,7 @@ footer {
     opacity: 0;
     padding-top: 0;
     padding-bottom: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
 }
 
 .component-content.reverse {
@@ -760,6 +761,23 @@ footer {
 
 .stat {
     text-align: center;
+}
+
+.stat-link {
+    text-decoration: none;
+    display: block;
+    transition: transform 0.2s;
+}
+
+.stat-link:hover {
+    transform: scale(1.05);
+}
+
+.stat-link .stat-value {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 4px;
 }
 
 .stat-value {
@@ -1112,10 +1130,19 @@ footer {
     
     .component-content {
         grid-template-columns: 1fr;
+        gap: var(--space-lg);
+    }
+    
+    .component-content.reverse {
+        grid-template-columns: 1fr;
     }
     
     .component-content.reverse .component-visual {
         order: -1;
+    }
+    
+    .component-visual {
+        order: 0;
     }
     
     .component-header::after {

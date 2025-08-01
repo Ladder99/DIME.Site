@@ -123,11 +123,30 @@ if (window.location.pathname.includes('platform.html')) {
         componentSections.forEach(section => {
             // Set initial collapsed state
             section.classList.add('collapsed');
+            const content = section.querySelector('.component-content');
             
             const header = section.querySelector('.component-header');
-            if (header) {
+            if (header && content) {
                 header.addEventListener('click', function() {
-                    section.classList.toggle('collapsed');
+                    if (section.classList.contains('collapsed')) {
+                        // Expanding
+                        section.classList.remove('collapsed');
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        
+                        // After animation, remove max-height to allow content to grow
+                        setTimeout(() => {
+                            if (!section.classList.contains('collapsed')) {
+                                content.style.maxHeight = 'none';
+                            }
+                        }, 300);
+                    } else {
+                        // Collapsing
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        // Force reflow
+                        content.offsetHeight;
+                        content.style.maxHeight = '0';
+                        section.classList.add('collapsed');
+                    }
                 });
             }
         });
@@ -147,6 +166,22 @@ if (window.location.pathname.includes('platform.html')) {
                 lightboxImage.src = this.src;
                 lightboxImage.alt = this.alt;
                 lightboxCaption.textContent = this.alt;
+            });
+        });
+        
+        // Add click handlers for stat links
+        const statLinks = document.querySelectorAll('.stat-link');
+        
+        statLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const imageSrc = this.getAttribute('data-image');
+                const caption = this.getAttribute('data-caption');
+                
+                lightbox.classList.add('active');
+                lightboxImage.src = imageSrc;
+                lightboxImage.alt = caption;
+                lightboxCaption.textContent = caption;
             });
         });
         
