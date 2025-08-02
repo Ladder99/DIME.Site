@@ -33,19 +33,25 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
 
         /* Override navbar for documentation */
         .navbar {
             background: var(--doc-surface);
             border-bottom: 1px solid var(--doc-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1100;
         }
 
         /* Documentation Layout */
         .doc-container {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: calc(100vh - 70px);
+            display: flex;
+            height: 100vh;
+            padding-top: 70px;
             position: relative;
         }
 
@@ -53,8 +59,10 @@
         .doc-sidebar {
             background: var(--doc-surface);
             border-right: 1px solid var(--doc-border);
-            position: sticky;
+            position: fixed;
             top: 70px;
+            left: 0;
+            width: 280px;
             height: calc(100vh - 70px);
             overflow-y: auto;
             scrollbar-width: thin;
@@ -204,9 +212,37 @@
 
         /* Main Content */
         .doc-content {
+            flex: 1;
+            margin-left: 280px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--doc-border) transparent;
+            position: relative;
+        }
+        
+        .doc-content-inner {
             padding: 3rem;
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
+        }
+        
+        .doc-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .doc-content::-webkit-scrollbar-track {
+            background: var(--doc-bg);
+        }
+        
+        .doc-content::-webkit-scrollbar-thumb {
+            background: var(--doc-border);
+            border-radius: 4px;
+        }
+        
+        .doc-content::-webkit-scrollbar-thumb:hover {
+            background: var(--doc-accent);
         }
 
         /* Hero Section */
@@ -542,7 +578,7 @@
         /* Mobile Responsive */
         @media (max-width: 1024px) {
             .doc-container {
-                grid-template-columns: 1fr;
+                display: block;
             }
 
             .doc-sidebar {
@@ -554,6 +590,10 @@
                 height: calc(100vh - 70px);
                 z-index: 1000;
                 box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+            }
+            
+            .doc-content {
+                margin-left: 0;
             }
 
             .doc-sidebar.mobile-open {
@@ -579,7 +619,7 @@
                 z-index: 999;
             }
 
-            .doc-content {
+            .doc-content-inner {
                 padding: 1.5rem;
             }
         }
@@ -706,20 +746,22 @@
 
         <!-- Main Content -->
         <main class="doc-content">
-            <!-- Hero Section -->
-            <div class="doc-hero" id="docHero">
-                <h1>DIME Connector Reference</h1>
-                <p>Complete documentation for all 40+ industrial and enterprise connectors</p>
-            </div>
+            <div class="doc-content-inner">
+                <!-- Hero Section -->
+                <div class="doc-hero" id="docHero">
+                    <h1>DIME Connector Reference</h1>
+                    <p>Complete documentation for all 40+ industrial and enterprise connectors</p>
+                </div>
 
-            <!-- Connector Grid View -->
-            <div id="connectorGrid" class="connector-grid">
-                <!-- Connector cards will be populated here -->
-            </div>
+                <!-- Connector Grid View -->
+                <div id="connectorGrid" class="connector-grid">
+                    <!-- Connector cards will be populated here -->
+                </div>
 
-            <!-- Connector Detail View -->
-            <div id="connectorDetail" class="connector-detail">
-                <!-- Connector details will be populated here -->
+                <!-- Connector Detail View -->
+                <div id="connectorDetail" class="connector-detail">
+                    <!-- Connector details will be populated here -->
+                </div>
             </div>
         </main>
     </div>
@@ -727,31 +769,7 @@
     <!-- Mobile Menu Toggle -->
     <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
 
-    <!-- Footer -->
-    <footer style="background: var(--doc-surface); border-top: 1px solid var(--doc-border);">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>Platform</h4>
-                    <ul>
-                        <li><a href="platform.html">Overview</a></li>
-                        <li><a href="pricing.html">Pricing</a></li>
-                        <li><a href="documentation.html">Documentation</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Company</h4>
-                    <ul>
-                        <li><a href="about.html">About MRIIOT</a></li>
-                        <li><a href="careers.html">Careers</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 MRIIOT LLC. All rights reserved. | DIME - Data In Motion Enterprise</p>
-            </div>
-        </div>
-    </footer>
+    <!-- Footer removed for documentation page -->
 
     <script src="js/main.js"></script>
     <script src="js/connectors-data.js"></script>
