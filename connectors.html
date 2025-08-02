@@ -88,14 +88,94 @@
         }
 
         .sidebar-header h2 {
-            margin: 0 0 1rem 0;
+            margin: 0;
             font-size: 1.25rem;
             color: var(--doc-accent);
+        }
+        
+        /* Quick Links Section */
+        .quick-links {
+            padding: 1.5rem;
+        }
+        
+        .quick-links h3 {
+            margin: 0 0 1rem 0;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--doc-text-muted);
+        }
+        
+        .quick-link-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .quick-link-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: var(--doc-surface-light);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--doc-text);
+            transition: all 0.2s;
+            font-size: 0.875rem;
+            gap: 0.75rem;
+        }
+        
+        .quick-link-item:hover {
+            background: var(--doc-accent);
+            color: white;
+            transform: translateX(4px);
+        }
+        
+        .quick-link-item.active {
+            background: var(--doc-accent);
+            color: white;
+        }
+        
+        .quick-link-item .icon {
+            font-size: 1.125rem;
+        }
+        
+        /* Sidebar Divider */
+        .sidebar-divider {
+            height: 1px;
+            background: var(--doc-border);
+            margin: 0 1.5rem;
+        }
+        
+        /* Connectors Section */
+        .connectors-section {
+            padding: 1.5rem 1.5rem 0;
+        }
+        
+        .connectors-section h3 {
+            margin: 0 0 1rem 0;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--doc-text-muted);
+        }
+        
+        /* Category Subtitle */
+        .category-subtitle {
+            padding: 0 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--doc-text-muted);
         }
 
         /* Search Box */
         .connector-search {
             position: relative;
+            padding: 1rem;
+            padding-bottom: 0.5rem;
         }
 
         .connector-search input {
@@ -118,7 +198,7 @@
         .connector-search::before {
             content: "🔍";
             position: absolute;
-            left: 0.75rem;
+            left: 1.25rem;
             top: 50%;
             transform: translateY(-50%);
             font-size: 1rem;
@@ -126,7 +206,7 @@
 
         /* Category Filters */
         .category-filters {
-            padding: 1.5rem;
+            padding: 0 1.5rem 1.5rem;
         }
 
         .category-filter {
@@ -717,6 +797,172 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        /* Quick Links Styles */
+        .quick-links {
+            padding: 1rem;
+            padding-top: 1.5rem;
+            border-bottom: 1px solid var(--neutral-800);
+        }
+        
+        .quick-links h3 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            color: var(--neutral-500);
+        }
+        
+        .quick-link-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .quick-link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 1rem;
+            background: var(--neutral-800);
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--neutral-200);
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .quick-link-item:hover {
+            background: var(--neutral-700);
+            color: var(--neutral-100);
+            border-color: var(--doc-accent);
+            transform: translateX(2px);
+        }
+        
+        .quick-link-item.active {
+            background: rgba(14, 165, 233, 0.1);
+            border-color: var(--doc-accent);
+            color: var(--doc-accent);
+        }
+        
+        .quick-link-item .icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        
+        /* Sidebar Divider */
+        .sidebar-divider {
+            height: 1px;
+            background: var(--neutral-800);
+            margin: 1rem 0;
+        }
+        
+        /* Documentation Page Styles */
+        .doc-page {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .doc-page h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--neutral-100);
+        }
+        
+        .doc-page h2 {
+            font-size: 1.875rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.25rem;
+            color: var(--neutral-100);
+        }
+        
+        .doc-page h3 {
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--neutral-200);
+        }
+        
+        .doc-page p {
+            line-height: 1.75;
+            margin-bottom: 1rem;
+            color: var(--neutral-300);
+        }
+        
+        .doc-page ul, .doc-page ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+            color: var(--neutral-300);
+        }
+        
+        .doc-page li {
+            margin-bottom: 0.5rem;
+            line-height: 1.75;
+        }
+        
+        .doc-page code {
+            background: var(--neutral-800);
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: var(--doc-accent);
+        }
+        
+        .doc-page a {
+            color: var(--doc-accent);
+            text-decoration: underline;
+        }
+        
+        .doc-page a:hover {
+            color: var(--primary);
+        }
+        
+        .doc-section {
+            margin-bottom: 3rem;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        /* Mermaid Diagram Styles */
+        .mermaid, pre.mermaid {
+            background: var(--neutral-800);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: inherit;
+        }
+        
+        .mermaid text {
+            fill: var(--neutral-200) !important;
+        }
+        
+        .mermaid .node rect,
+        .mermaid .node circle,
+        .mermaid .node ellipse,
+        .mermaid .node polygon,
+        .mermaid .node path {
+            stroke: var(--neutral-600) !important;
+        }
+        
+        .mermaid .edgePath .path {
+            stroke: var(--neutral-400) !important;
+        }
+        
+        .mermaid .edgeLabel {
+            background-color: var(--neutral-800) !important;
+            color: var(--neutral-300) !important;
+        }
+        
+        .mermaid .cluster rect {
+            fill: var(--neutral-700) !important;
+            stroke: var(--neutral-600) !important;
+        }
+        
+        .mermaid .cluster text {
+            fill: var(--neutral-100) !important;
+        }
     </style>
 </head>
 <body>
@@ -752,13 +998,36 @@
     <div class="doc-container">
         <!-- Sidebar -->
         <aside class="doc-sidebar" id="docSidebar">
-            <div class="sidebar-header">
-                <h2>Connectors</h2>
-                <div class="connector-search">
-                    <input type="text" id="connectorSearch" placeholder="Search connectors...">
+            <div class="quick-links">
+                <div class="quick-link-items">
+                    <a href="#" class="quick-link-item" data-doc="getting-started">
+                        <span class="icon">🚀</span>
+                        <span>Getting Started</span>
+                    </a>
+                    <a href="#" class="quick-link-item" data-doc="architecture">
+                        <span class="icon">📖</span>
+                        <span>Architecture</span>
+                    </a>
+                    <a href="#" class="quick-link-item" data-doc="scripting">
+                        <span class="icon">🔧</span>
+                        <span>Scripting</span>
+                    </a>
+                    <a href="#" class="quick-link-item" data-doc="examples">
+                        <span class="icon">💡</span>
+                        <span>Examples</span>
+                    </a>
+                    <a href="#" class="quick-link-item" data-doc="api-reference">
+                        <span class="icon">📡</span>
+                        <span>API Reference</span>
+                    </a>
                 </div>
             </div>
             
+            <div class="connector-search">
+                <input type="text" id="connectorSearch" placeholder="Search connectors...">
+            </div>
+            
+            <div class="category-subtitle">Categories</div>
             <div class="category-filters">
                 <div class="category-filter active" data-category="all">
                     <span class="icon">📦</span>
@@ -812,6 +1081,8 @@
                 </div>
             </div>
             
+            <div class="sidebar-divider"></div>
+            
             <div class="connector-list" id="connectorList">
                 <!-- Connectors will be populated here -->
             </div>
@@ -852,6 +1123,26 @@
         // Initialize documentation
         document.addEventListener('DOMContentLoaded', function() {
             initializeDocumentation();
+            
+            // Initialize mermaid
+            mermaid.initialize({ 
+                startOnLoad: true,
+                theme: 'dark',
+                themeVariables: {
+                    primaryColor: '#1e293b',
+                    primaryTextColor: '#e2e8f0',
+                    primaryBorderColor: '#475569',
+                    lineColor: '#64748b',
+                    secondaryColor: '#334155',
+                    tertiaryColor: '#1e293b',
+                    background: '#0f172a',
+                    mainBkg: '#1e293b',
+                    secondBkg: '#334155',
+                    tertiaryBkg: '#475569',
+                    darkMode: true,
+                    fontFamily: 'system-ui, -apple-system, sans-serif'
+                }
+            });
         });
         
         function initializeDocumentation() {
@@ -876,6 +1167,25 @@
                     categoryFilters.forEach(f => f.classList.remove('active'));
                     this.classList.add('active');
                     filterByCategory(this.dataset.category);
+                    // Show connector grid when category is clicked
+                    showConnectorGrid();
+                    // Clear any active states
+                    document.querySelectorAll('.connector-item').forEach(i => i.classList.remove('active'));
+                    document.querySelectorAll('.quick-link-item').forEach(i => i.classList.remove('active'));
+                });
+            });
+            
+            // Quick Links functionality
+            const quickLinks = document.querySelectorAll('.quick-link-item');
+            quickLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const docType = this.dataset.doc;
+                    showDocumentation(docType);
+                    // Update active state
+                    document.querySelectorAll('.connector-item').forEach(i => i.classList.remove('active'));
+                    quickLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
                 });
             });
             
@@ -1090,6 +1400,486 @@
                     button.classList.remove('copied');
                 }, 2000);
             });
+        }
+        
+        // Show documentation pages
+        function showDocumentation(docType) {
+            document.getElementById('connectorGrid').style.display = 'none';
+            document.getElementById('docHero').style.display = 'none';
+            
+            const detailView = document.getElementById('connectorDetail');
+            let content = '';
+            
+            switch(docType) {
+                case 'getting-started':
+                    content = generateGettingStartedDoc();
+                    break;
+                case 'architecture':
+                    content = generateArchitectureDoc();
+                    break;
+                case 'scripting':
+                    content = generateScriptingDoc();
+                    break;
+                case 'examples':
+                    content = generateExamplesDoc();
+                    break;
+                case 'api-reference':
+                    content = generateApiReferenceDoc();
+                    break;
+                default:
+                    content = '<p>Documentation page not found.</p>';
+            }
+            
+            detailView.innerHTML = content;
+            detailView.classList.add('active');
+            window.scrollTo(0, 0);
+            
+            // Re-render mermaid diagrams if any exist
+            if (typeof mermaid !== 'undefined') {
+                mermaid.run();
+            }
+        }
+        
+        // Documentation page generators
+        function generateGettingStartedDoc() {
+            return `
+                <div class="doc-page">
+                    <h1>🚀 Getting Started with DIME</h1>
+                    
+                    <section class="doc-section">
+                        <p>Data In Motion Enterprise (DIME) is an extensible software framework that moves and reshapes data from enterprise and industrial sources to message queues, databases, and other sinks. With integrated AI capabilities, DIME provides intelligent data analysis and automated configuration generation.</p>
+                        
+                        <h2>Key Capabilities</h2>
+                        <ul>
+                            <li>40+ enterprise and industrial connectors in a single platform</li>
+                            <li>Python, Lua, Scriban and Liquid scripting</li>
+                            <li>Full Docker support</li>
+                            <li>Data collection layer embeddable into other applications and deployable at the edge</li>
+                            <li>Extensible framework for quick connector additions</li>
+                            <li>AI-powered configuration and simulation generation</li>
+                            <li>LLM-Integrated Analytics Workbench</li>
+                            <li>Neuromorphic HTM anomaly detection</li>
+                        </ul>
+                        
+                        <h2>Data Collection Layer</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Storage Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Analytics Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Anomaly Detection Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                    </section>
+                    
+                    <div style="margin-top: 3rem;">
+                        <button class="btn btn-secondary" onclick="showConnectorGrid()">← Back to Connectors</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateArchitectureDoc() {
+            return `
+                <div class="doc-page">
+                    <h1>📖 DIME Architecture</h1>
+                    
+                    <section class="doc-section">
+                        <h2>Data Collection Layer</h2>
+                        
+                        <h3>Core Components</h3>
+                        <pre class="mermaid">
+graph TD
+    subgraph Sources
+        direction TB
+        S1[PLCs]
+        S2[SCADA]
+        S3[Robots]
+        S4[Sensors]
+        S5[Databases]
+    end
+    
+    subgraph ScriptEngine["Script Engine"]
+        direction TB
+        SE1[Lua]
+        SE2[Python]
+        SE3[Templates]
+    end
+    
+    subgraph RingBuffer["Ring Buffer"]
+        RB["Disruptor Pattern<br/>< 1ms latency"]
+    end
+    
+    subgraph Sinks
+        direction TB
+        SK1[Databases]
+        SK2[MQTT]
+        SK3[Cloud]
+        SK4[Files]
+        SK5[APIs]
+    end
+    
+    Sources --> RingBuffer
+    RingBuffer --> Sinks
+    
+    ScriptEngine -.- Sources
+    ScriptEngine -.- Sinks
+                        </pre>
+                        
+                        <h3>Message Flow</h3>
+                        
+                        <h4>Polling Source Connector Pattern</h4>
+                        <pre class="mermaid">
+graph LR
+    subgraph "Polling Source Connector"
+        Timer["Timer<br/>(Configurable Interval)"]
+        Poll["Poll Method"]
+        Device["Device/System<br/>(PLC, Database, etc.)"]
+        Transform["Transform<br/>(Optional Script)"]
+        Message["Message Creation"]
+    end
+    
+    RingBuffer["Ring Buffer"]
+    
+    Timer -->|"Triggers"| Poll
+    Poll -->|"Read Request"| Device
+    Device -->|"Raw Data"| Transform
+    Transform -->|"Processed Data"| Message
+    Message -->|"Publish"| RingBuffer
+    
+    style Timer fill:#4a5568,stroke:#2d3748,color:#fff
+    style Poll fill:#2563eb,stroke:#1e40af,color:#fff
+    style Device fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style Transform fill:#0891b2,stroke:#0e7490,color:#fff
+    style Message fill:#059669,stroke:#047857,color:#fff
+    style RingBuffer fill:#dc2626,stroke:#b91c1c,color:#fff
+                        </pre>
+                        
+                        <h4>Queue Source Connector Pattern</h4>
+                        <pre class="mermaid">
+graph LR
+    subgraph "Queue Source Connector"
+        EventQueue["Event Queue<br/>(Internal Buffer)"]
+        EventHandler["Event Handler"]
+        Device["Device/System<br/>(MQTT, OPC-UA, etc.)"]
+        Transform["Transform<br/>(Optional Script)"]
+        Message["Message Creation"]
+    end
+    
+    RingBuffer["Ring Buffer"]
+    
+    Device -->|"Push Events"| EventHandler
+    EventHandler -->|"Enqueue"| EventQueue
+    EventQueue -->|"Dequeue"| Transform
+    Transform -->|"Processed Data"| Message
+    Message -->|"Publish"| RingBuffer
+    
+    style Device fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style EventHandler fill:#2563eb,stroke:#1e40af,color:#fff
+    style EventQueue fill:#4a5568,stroke:#2d3748,color:#fff
+    style Transform fill:#0891b2,stroke:#0e7490,color:#fff
+    style Message fill:#059669,stroke:#047857,color:#fff
+    style RingBuffer fill:#dc2626,stroke:#b91c1c,color:#fff
+                        </pre>
+                        
+                        <h4>End-to-end Message Flow</h4>
+                        <pre class="mermaid">
+graph LR
+    subgraph "Source Layer"
+        PLC["PLC<br/>(ModbusTCP)"]
+        OPCUA["OPC-UA<br/>Server"]
+        MQTT["MQTT<br/>Broker"]
+    end
+    
+    subgraph "Source Connectors"
+        PSC["Polling Source<br/>Connector"]
+        QSC["Queue Source<br/>Connector"]
+    end
+    
+    subgraph "Transformation Logic"
+        TL["Script Engine<br/>(Lua/Python)<br/>Item Transform"]
+    end
+    
+    subgraph "Message Processing"
+        MB["Message Box<br/>(Normalized Format)"]
+        RB["Ring Buffer<br/>(Disruptor)"]
+    end
+    
+    subgraph "Sink Processing"
+        Filter["Path Filter<br/>(Include/Exclude)"]
+        Script["Script Engine<br/>(Transform)"]
+        Template["Template<br/>Engine"]
+    end
+    
+    subgraph "Sink Layer"
+        DB[(Database)]
+        Cloud["Cloud API"]
+        WS["WebSocket"]
+    end
+    
+    PLC -->|"Poll"| PSC
+    OPCUA -->|"Subscribe"| QSC
+    MQTT -->|"Subscribe"| QSC
+    
+    PSC -->|"Raw Data"| TL
+    QSC -->|"Raw Data"| TL
+    
+    TL -->|"Transformed"| MB
+    
+    MB -->|"Publish"| RB
+    
+    RB -->|"Event"| Filter
+    Filter -->|"Match"| Script
+    Script -->|"Transform"| Template
+    Template -->|"Format"| DB
+    Template -->|"Format"| Cloud
+    Template -->|"Format"| WS
+    
+    style PLC fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style OPCUA fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style MQTT fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style PSC fill:#2563eb,stroke:#1e40af,color:#fff
+    style QSC fill:#2563eb,stroke:#1e40af,color:#fff
+    style TL fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style MB fill:#0891b2,stroke:#0e7490,color:#fff
+    style RB fill:#dc2626,stroke:#b91c1c,color:#fff
+    style Filter fill:#059669,stroke:#047857,color:#fff
+    style Script fill:#d97706,stroke:#b45309,color:#fff
+    style Template fill:#d97706,stroke:#b45309,color:#fff
+    style DB fill:#4a5568,stroke:#2d3748,color:#fff
+    style Cloud fill:#4a5568,stroke:#2d3748,color:#fff
+    style WS fill:#4a5568,stroke:#2d3748,color:#fff
+                        </pre>
+                        
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Storage Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Analytics Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Anomaly Detection Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                    </section>
+                    
+                    <div style="margin-top: 3rem;">
+                        <button class="btn btn-secondary" onclick="showConnectorGrid()">← Back to Connectors</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateScriptingDoc() {
+            return `
+                <div class="doc-page">
+                    <h1>🔧 Scripting in DIME</h1>
+                    
+                    <section class="doc-section">
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                    </section>
+                    
+                    <div style="margin-top: 3rem;">
+                        <button class="btn btn-secondary" onclick="showConnectorGrid()">← Back to Connectors</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateExamplesDoc() {
+            return `
+                <div class="doc-page">
+                    <h1>💡 DIME Examples</h1>
+                    
+                    <section class="doc-section">
+                        <h2>Data Collection Layer</h2>
+                        
+                        <h3>Example 1</h3>
+                        <pre class="mermaid">
+graph LR
+    MainYAML["main.yaml"]
+    
+    subgraph "Sources"
+        Rockwell["ROCKWELL<br/>PLC"]
+        Beckhoff["BECKHOFF<br/>PLC"]
+        IgnitionSource["IGNITION"]
+    end
+    
+    subgraph "Source Configs"
+        ELP["eip.yaml<br/>(Source)"]
+        Beck["beck.yaml<br/>(Source)"]
+        SPB2["spb2.yaml<br/>(Source)"]
+    end
+    
+    DIME["DIME<br/>Processing"]
+    
+    subgraph "Sink Configs"
+        Console["console.yaml<br/>(Sink)"]
+        MQTT["mqtt.yaml<br/>(Sink)"]
+        SPB1["spb1.yaml<br/>(Sink)"]
+    end
+    
+    subgraph "Destinations"
+        ConsoleOut["CONSOLE"]
+        MQTTBroker["MQTT<br/>BROKER"]
+        IgnitionDest["IGNITION"]
+    end
+    
+    MainYAML --> DIME
+    
+    Rockwell --> ELP
+    Beckhoff --> Beck
+    IgnitionSource --> SPB2
+    
+    ELP --> DIME
+    Beck --> DIME
+    SPB2 --> DIME
+    
+    DIME --> Console
+    DIME --> MQTT
+    DIME --> SPB1
+    
+    Console --> ConsoleOut
+    MQTT --> MQTTBroker
+    SPB1 --> IgnitionDest
+    
+    style Rockwell fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style Beckhoff fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style IgnitionSource fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style ELP fill:#2563eb,stroke:#1e40af,color:#fff
+    style Beck fill:#2563eb,stroke:#1e40af,color:#fff
+    style SPB2 fill:#2563eb,stroke:#1e40af,color:#fff
+    style DIME fill:#dc2626,stroke:#b91c1c,color:#fff
+    style Console fill:#059669,stroke:#047857,color:#fff
+    style MQTT fill:#059669,stroke:#047857,color:#fff
+    style SPB1 fill:#059669,stroke:#047857,color:#fff
+    style ConsoleOut fill:#4a5568,stroke:#2d3748,color:#fff
+    style MQTTBroker fill:#4a5568,stroke:#2d3748,color:#fff
+    style IgnitionDest fill:#4a5568,stroke:#2d3748,color:#fff
+    style MainYAML fill:#0891b2,stroke:#0e7490,color:#fff
+                        </pre>
+                        
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h3>Example 2</h3>
+                        <pre class="mermaid">
+graph LR
+    MainYAML2["main.yaml"]
+    
+    subgraph "Sources"
+        Haas["HAAS<br/>CNC MILL"]
+        Mazak["MAZAK<br/>CNC LATHE"]
+        Rockwell2["ROCKWELL<br/>PLC"]
+    end
+    
+    subgraph "Endpoints"
+        Option143["OPTION<br/>143 Q CMDS"]
+        PseudoAgent["PSEUDO<br/>MTCONNECT<br/>AGENT"]
+        MazakAgent["MTCONNECT<br/>AGENT"]
+        RegDB["REGISTERS<br/>DATABASE"]
+    end
+    
+    subgraph "Source Configs"
+        Haas1["haas1.yaml<br/>(Source)"]
+        Haas2["haas2.yaml<br/>(Source)"]
+        Mazak1["mazak1.yaml<br/>(Source)"]
+        Rock1["rock1.yaml<br/>(Source)"]
+    end
+    
+    DIME2["DIME<br/>Processing"]
+    
+    subgraph "Sink Configs"
+        Console2["console.yaml<br/>(Sink)"]
+        Agent["agent.yaml<br/>(Sink)"]
+        SHDR["shdr.yaml<br/>(Sink)"]
+    end
+    
+    subgraph "Destinations"
+        ConsoleOut2["CONSOLE"]
+        MTCAgent["MTCONNECT<br/>AGENT<br/>http:5000"]
+        SHDRAdapter["SHDR<br/>ADAPTER<br/>tcp:7878"]
+    end
+    
+    MainYAML2 --> DIME2
+    
+    Haas -->|"tcp:5051"| Option143
+    Haas -->|"tcp:8082"| PseudoAgent
+    Option143 --> Haas1
+    PseudoAgent --> Haas2
+    Mazak -->|"tcp:5000"| MazakAgent
+    MazakAgent --> Mazak1
+    Rockwell2 -->|"tcp:44818"| RegDB
+    RegDB --> Rock1
+    
+    Haas1 --> DIME2
+    Haas2 --> DIME2
+    Mazak1 --> DIME2
+    Rock1 --> DIME2
+    
+    DIME2 --> Console2
+    DIME2 --> Agent
+    DIME2 --> SHDR
+    
+    Console2 --> ConsoleOut2
+    Agent --> MTCAgent
+    SHDR --> SHDRAdapter
+    
+    style Haas fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style Mazak fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style Rockwell2 fill:#7c3aed,stroke:#6d28d9,color:#fff
+    style Option143 fill:#d97706,stroke:#b45309,color:#fff
+    style PseudoAgent fill:#d97706,stroke:#b45309,color:#fff
+    style MazakAgent fill:#d97706,stroke:#b45309,color:#fff
+    style RegDB fill:#d97706,stroke:#b45309,color:#fff
+    style Haas1 fill:#2563eb,stroke:#1e40af,color:#fff
+    style Haas2 fill:#2563eb,stroke:#1e40af,color:#fff
+    style Mazak1 fill:#2563eb,stroke:#1e40af,color:#fff
+    style Rock1 fill:#2563eb,stroke:#1e40af,color:#fff
+    style DIME2 fill:#dc2626,stroke:#b91c1c,color:#fff
+    style Console2 fill:#059669,stroke:#047857,color:#fff
+    style Agent fill:#059669,stroke:#047857,color:#fff
+    style SHDR fill:#059669,stroke:#047857,color:#fff
+    style ConsoleOut2 fill:#4a5568,stroke:#2d3748,color:#fff
+    style MTCAgent fill:#4a5568,stroke:#2d3748,color:#fff
+    style SHDRAdapter fill:#4a5568,stroke:#2d3748,color:#fff
+    style MainYAML2 fill:#0891b2,stroke:#0e7490,color:#fff
+                        </pre>
+                        
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Storage Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Analytics Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Anomaly Detection Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                    </section>
+                    
+                    <div style="margin-top: 3rem;">
+                        <button class="btn btn-secondary" onclick="showConnectorGrid()">← Back to Connectors</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function generateApiReferenceDoc() {
+            return `
+                <div class="doc-page">
+                    <h1>📡 API Reference</h1>
+                    
+                    <section class="doc-section">
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                    </section>
+                    
+                    <div style="margin-top: 3rem;">
+                        <button class="btn btn-secondary" onclick="showConnectorGrid()">← Back to Connectors</button>
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>
