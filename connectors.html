@@ -1356,6 +1356,30 @@
                     </div>
                 </div>
                 
+                ${connector.variableAddresses ? `
+                <div class="parameter-section" style="margin-top: 2rem;">
+                    <h3>📋 Variable Addresses</h3>
+                    <div class="parameter-table-wrapper">
+                        <div class="parameter-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        ${connector.variableAddresses[0].map(() => '<th>Address</th>').join('')}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${connector.variableAddresses.map(row => `
+                                        <tr>
+                                            ${row.map(addr => `<td>${addr || ''}</td>`).join('')}
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+                
                 <div style="margin-top: 3rem;">
                     <button class="btn btn-secondary" onclick="showConnectorGrid()">← Back to Connectors</button>
                 </div>

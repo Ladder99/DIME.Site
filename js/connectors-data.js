@@ -238,7 +238,21 @@ const connectors = [
   address: 192.168.111.20
   items:
     - name: UI1
-      address: UI.1`
+      address: UI.1`,
+    variableAddresses: [
+      ["worldCartesianPosition.R", "worldJointPosition.J1", "AI.{index}", "WSI.{index}"],
+      ["worldCartesianPosition.P", "worldJointPosition.J2", "AO.{index}", "PMC_K.{index}"],
+      ["worldCartesianPosition.W", "worldJointPosition.J3", "GI.{index}", "PMC_D.{index}"],
+      ["worldCartesianPosition.X", "worldJointPosition.J4", "GO.{index}", "PMC_R.{index}"],
+      ["worldCartesianPosition.Y", "worldJointPosition.J5", "SI.{index}", "StringSystemVariables.{index}"],
+      ["worldCartesianPosition.Z", "worldJointPosition.J6", "SO.{index}", "IntegerSystemVariables.{index}"],
+      ["worldCartesianPosition.E1", "worldJointPosition.J7", "UI.{index}", "PositionSystemVariables.{index}"],
+      ["worldCartesianPosition.E2", "worldJointPosition.J8", "UO.{index}", "NumericRegisters.{index}"],
+      ["worldCartesianPosition.E3", "worldJointPosition.J9", "RDI.{index}", "PositionRegisters.{index}"],
+      ["worldCartesianPosition.T4", "", "RDO.{index}", "StringRegisters.{index}"],
+      ["worldCartesianPosition.T5", "", "SDI.{index}", ""],
+      ["worldCartesianPosition.T6", "", "SDO.{index}", ""]
+    ]
   },
   {
     id: "haasshdr",
@@ -1162,6 +1176,26 @@ const connectors = [
   uri: 10.1.1.200
   items:
     - name: xpos
-      address: cartesianPositions.X`
+      address: cartesianPositions.X`,
+    variableAddresses: [
+      ["cartesianPositions.X", "torque.Axis1", "status.CommandRemote"],
+      ["cartesianPositions.Y", "torque.Axis2", "status.InHoldStatusPendant"],
+      ["cartesianPositions.Z", "torque.Axis3", "status.InHoldStatusExternally"],
+      ["cartesianPositions.Rx", "torque.Axis4", "status.InHoldStatusByCommand"],
+      ["cartesianPositions.Ry", "torque.Axis5", "status.Alarming"],
+      ["cartesianPositions.Rz", "torque.Axis6", "status.ErrorOccurring"],
+      ["jointPositions.Axis1", "alarm.Code", "status.ServoOn"],
+      ["jointPositions.Axis2", "alarm.Data", "job.Name"],
+      ["jointPositions.Axis3", "alarm.Type", "job.Line"],
+      ["jointPositions.Axis4", "alarm.OccurringTime", "job.Step"],
+      ["jointPositions.Axis5", "alarm.Text", "job.SpeedOverride"],
+      ["jointPositions.Axis6", "status.Step", ""],
+      ["positionError.Axis1", "status.Cycle", ""],
+      ["positionError.Axis2", "status.Automatic", ""],
+      ["positionError.Axis3", "status.Running", ""],
+      ["positionError.Axis4", "status.InGuardSafeOperation", ""],
+      ["positionError.Axis5", "status.Teach", ""],
+      ["positionError.Axis6", "status.Play", ""]
+    ]
   }
 ];
