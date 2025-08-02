@@ -466,6 +466,7 @@ a.component-link:hover h3 {
     height: 400px;
     display: block;
     margin: 0 auto;
+    transition: opacity 0.3s ease;
 }
 
 .demo-gif {
@@ -485,6 +486,7 @@ a.component-link:hover h3 {
     color: white;
     border: none;
     border-radius: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
     font-size: 2rem;
     cursor: pointer;
     transition: all 0.2s;

@@ -40,18 +40,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const demoGif = document.querySelector('.demo-gif');
     
     if (playButton && demoPoster && demoGif) {
+        // Preload the GIF
+        const preloadGif = new Image();
+        preloadGif.src = demoGif.src;
+        
         playButton.addEventListener('click', function() {
-            // Hide poster and play button
-            demoPoster.style.display = 'none';
-            playButton.style.display = 'none';
+            // Create a new GIF element to ensure fresh start
+            const newGif = document.createElement('img');
+            newGif.src = demoGif.src + '?t=' + new Date().getTime();
+            newGif.className = 'demo-gif';
+            newGif.style.display = 'none';
             
-            // Show and start the GIF
-            demoGif.style.display = 'block';
+            // Wait for the new GIF to load before transitioning
+            newGif.onload = function() {
+                // Hide poster and play button with fade effect
+                demoPoster.style.opacity = '0';
+                playButton.style.opacity = '0';
+                
+                setTimeout(() => {
+                    demoPoster.style.display = 'none';
+                    playButton.style.display = 'none';
+                    newGif.style.display = 'block';
+                }, 300);
+            };
             
-            // Force reload the GIF to start from beginning
-            const gifSrc = demoGif.src;
-            demoGif.src = '';
-            demoGif.src = gifSrc + '?t=' + new Date().getTime();
+            // Replace the old GIF with the new one
+            demoGif.parentNode.replaceChild(newGif, demoGif);
             
             // Add a replay button after GIF loads
             setTimeout(() => {
@@ -59,9 +73,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 replayBtn.className = 'replay-button';
                 replayBtn.innerHTML = '↻ Replay';
                 replayBtn.addEventListener('click', function() {
-                    const newSrc = gifSrc + '?t=' + new Date().getTime();
-                    demoGif.src = '';
-                    demoGif.src = newSrc;
+                    const reloadGif = document.createElement('img');
+                    reloadGif.src = newGif.src.split('?')[0] + '?t=' + new Date().getTime();
+                    reloadGif.className = 'demo-gif';
+                    reloadGif.style.display = 'block';
+                    newGif.parentNode.replaceChild(reloadGif, newGif);
+                    replayBtn.remove();
                 });
                 document.getElementById('demo-container').appendChild(replayBtn);
             }, 1000);
