@@ -443,6 +443,86 @@ a.component-link:hover h3 {
     padding: var(--space-3xl) 0;
 }
 
+/* Try it yourself Section */
+.try-it-yourself {
+    padding: var(--space-3xl) 0;
+    background: white;
+}
+
+.try-it-yourself .section-subtitle {
+    font-size: 1.25rem;
+    color: var(--neutral-600);
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+}
+
+.download-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-xl);
+    margin-bottom: var(--space-3xl);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.download-card {
+    background: var(--neutral-50);
+    padding: var(--space-2xl);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    border: 1px solid var(--neutral-200);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.download-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.download-icon {
+    font-size: 3rem;
+    margin-bottom: var(--space-md);
+}
+
+.download-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-sm);
+    color: var(--neutral-900);
+}
+
+.download-card p {
+    color: var(--neutral-600);
+    margin-bottom: var(--space-lg);
+}
+
+.example-prompt {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.example-prompt h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-md);
+    color: var(--neutral-800);
+}
+
+.prompt-box {
+    background: var(--neutral-100);
+    padding: var(--space-xl);
+    border-radius: var(--radius-md);
+    border: 2px dashed var(--primary);
+    font-family: 'Courier New', monospace;
+}
+
+.prompt-box p {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--neutral-800);
+    font-style: italic;
+}
+
 .video-wrapper {
     position: relative;
     max-width: 900px;
