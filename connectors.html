@@ -423,17 +423,68 @@
         }
 
         .parameter-table {
-            width: 100%;
             background: var(--doc-surface);
             border: 1px solid var(--doc-border);
             border-radius: 8px;
-            overflow: hidden;
+            overflow: visible; /* Changed from hidden to allow horizontal scroll */
+        }
+        
+        /* Mobile table wrapper */
+        .parameter-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Force scrolling on all screen sizes for testing */
+        .parameter-table {
+            display: inline-block;
+            min-width: 100%;
+        }
+        
+        .parameter-table table {
+            min-width: 800px; /* Force width to trigger scrolling */
+        }
+        
+        @media (max-width: 768px) {
+            .parameter-table-wrapper {
+                margin: 0 -1.5rem;
+                padding: 0 1.5rem;
+                max-width: 100vw;
+            }
+            
+            .parameter-table {
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+            
+            .parameter-table table {
+                min-width: 700px;
+            }
+            
+            /* Ensure proper sizing */
+            .parameter-section {
+                overflow: hidden;
+            }
+            
+            /* Custom scrollbar for mobile */
+            .parameter-table-wrapper::-webkit-scrollbar {
+                height: 8px;
+            }
+            
+            .parameter-table-wrapper::-webkit-scrollbar-track {
+                background: var(--doc-surface);
+            }
+            
+            .parameter-table-wrapper::-webkit-scrollbar-thumb {
+                background: var(--doc-accent);
+                border-radius: 4px;
+            }
         }
 
-        .parameter-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        /* Remove duplicate - handled above */
 
         .parameter-table th {
             background: var(--doc-surface-light);
@@ -442,6 +493,28 @@
             font-weight: 600;
             border-bottom: 1px solid var(--doc-border);
             color: var(--doc-accent);
+            white-space: nowrap;
+        }
+        
+        /* Set minimum column widths */
+        .parameter-table th:nth-child(1),
+        .parameter-table td:nth-child(1) {
+            min-width: 150px;
+        }
+        
+        .parameter-table th:nth-child(2),
+        .parameter-table td:nth-child(2) {
+            min-width: 100px;
+        }
+        
+        .parameter-table th:nth-child(3),
+        .parameter-table td:nth-child(3) {
+            min-width: 120px;
+        }
+        
+        .parameter-table th:nth-child(4),
+        .parameter-table td:nth-child(4) {
+            min-width: 300px;
         }
 
         .parameter-table td {
@@ -934,27 +1007,29 @@
                 
                 <div class="parameter-section">
                     <h3>📋 Parameters</h3>
-                    <div class="parameter-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Type</th>
-                                    <th>Default</th>
-                                    <th>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${connector.parameters.map(param => `
+                    <div class="parameter-table-wrapper">
+                        <div class="parameter-table">
+                            <table>
+                                <thead>
                                     <tr>
-                                        <td><span class="param-name">${param.name}</span></td>
-                                        <td><span class="param-type">${param.type}</span></td>
-                                        <td><span class="param-default">${param.default}</span></td>
-                                        <td>${param.description}</td>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Default</th>
+                                        <th>Description</th>
                                     </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    ${connector.parameters.map(param => `
+                                        <tr>
+                                            <td><span class="param-name">${param.name}</span></td>
+                                            <td><span class="param-type">${param.type}</span></td>
+                                            <td><span class="param-default">${param.default}</span></td>
+                                            <td>${param.description}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 
