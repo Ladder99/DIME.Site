@@ -2093,6 +2093,555 @@ graph TB
                         
                         <h3>Tutorial 1</h3>
                         
+                        <h4>Single File Configuration</h4>
+                        
+                        <p>We will start with a configuration that reads two registers from a Micrologix PLC and writes the output to the console. The configuration below must be saved as <code>main.yaml</code> in the <code>Configs</code> solution subdirectory.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>console: &amp;console
+  name: console
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: Console
+rockwell: &amp;rockwell
+  name: rockwell
+  enabled: !!bool true
+  scan_interval: !!int 1500
+  connector: EthernetIP
+  type: !!int 5
+  address: 192.168.111.20
+  path: 1,0
+  items:
+    - name: Execution
+      type: bool
+      address: B3:0/3
+    - name: GoodPartCount
+      type: int
+      address: N7:1
+app:
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+sinks:
+  - *console
+sources:
+  - *rockwell</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Split Configuration Across Multiple Files</h4>
+                        
+                        <p>The configuration can be split across multiple files because we are using YAML merging and referencing <code>&amp;console</code> and <code>&amp;rockwell</code> anchors. Below is the same configuration split across multiple files, where the <code>main.yaml</code> references individual sinks and sources. All files in the <code>Configs</code> subdirectory are read at startup and merged together.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">console.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>console: &amp;console
+  name: console
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: Console</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">rockwell.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>rockwell: &amp;rockwell
+  name: rockwell
+  enabled: !!bool true
+  scan_interval: !!int 1500
+  connector: EthernetIP
+  type: !!int 5
+  address: 192.168.111.20
+  path: 1,0
+  items:
+    - name: Execution
+      type: bool
+      address: B3:0/3
+    - name: GoodPartCount
+      type: int
+      address: N7:1</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>app:
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+sinks:
+  - *console
+sources:
+  - *rockwell</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Running this configuration produces the following output.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">TEXT</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>[console] Path: rockwell/Execution, Message: {"Path":"rockwell/Execution","Data":true,"Timestamp":1735019503539}
+[console] Path: rockwell/GoodPartCount, Message: {"Path":"rockwell/GoodPartCount","Data":133,"Timestamp":1735019503878}
+[console] Path: rockwell/$SYSTEM/ExecutionDuration, Message: {"Path":"rockwell/$SYSTEM/ExecutionDuration","Data":0,"Timestamp":1735019503882}
+[console] Path: rockwell/$SYSTEM/IsConnected, Message: {"Path":"rockwell/$SYSTEM/IsConnected","Data":true,"Timestamp":1735019503882}
+[console] Path: rockwell/$SYSTEM/IsFaulted, Message: {"Path":"rockwell/$SYSTEM/IsFaulted","Data":false,"Timestamp":1735019503882}
+[console] Path: rockwell/$SYSTEM/Fault, Message: {"Path":"rockwell/$SYSTEM/Fault","Data":null,"Timestamp":1735019503882}</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Using the Exclude Filter</h4>
+                        
+                        <p>Each item's path is constructed from the connector's and item's <code>name</code> property (e.g. <code>rockwell/Execution</code>). There are four system messages. <code>$SYSTEM/ExecutionDuration</code> is the duration in milliseconds of the last execution. <code>$SYSTEM/IsConnected</code> indicates the connection status to the PLC. <code>$SYSTEM/IsFaulted</code> and <code>$SYSTEM/Fault</code> indicate the connector's fault status and message, respectively. These system messages can be excluded from the sink by using an <code>exclude_filter</code> property on the sink. Any message path starting with <code>rockwell/$SYSTEM</code> will be excluded from output. An <code>include_filter</code>, on the other hand, would include only messages that start with a specific string in the output.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">console.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>console: &amp;console
+  name: console
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: Console
+  exclude_filter:
+    - rockwell/$SYSTEM</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Using the Script Property</h4>
+                        
+                        <p>By using a <code>script</code> property on our Execution item, let's modify the output to <code>Running</code> when true and <code>Idle</code> when false. (scripting help: <a href="https://www.lua.org/pil/1.html">https://www.lua.org/pil/1.html</a>)</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">rockwell.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>rockwell: &amp;rockwell
+  name: rockwell
+  enabled: !!bool true
+  scan_interval: !!int 1500
+  connector: EthernetIP
+  type: !!int 5
+  address: 192.168.111.20
+  path: 1,0
+  items:
+    - name: Execution
+      type: bool
+      address: B3:0/3
+      script: |
+        local states = { [0]='Idle', [1]='Running' };
+        return states[result and 1 or 0];
+    - name: GoodPartCount
+      type: int
+      address: N7:1</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Now, the output looks like this.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">TEXT</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>[console] Path: rockwell/Execution, Message: {"Path":"rockwell/Execution","Data":"Running","Timestamp":1735021457454}
+[console] Path: rockwell/GoodPartCount, Message: {"Path":"rockwell/GoodPartCount","Data":133,"Timestamp":1735021457769}
+[console] Path: rockwell/Execution, Message: {"Path":"rockwell/Execution","Data":"Idle","Timestamp":1735021460396}</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Using Sink Transforms</h4>
+                        
+                        <p>This is fine but we want to eventually publish an atomic value to an MQTT broker, not the entire Message object. For this, we can use a sink transform. (scripting help: <a href="https://github.com/scriban/scriban/blob/master/doc/language.md">https://github.com/scriban/scriban/blob/master/doc/language.md</a>)</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">rockwell.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>rockwell: &amp;rockwell
+  name: rockwell
+  enabled: !!bool true
+  scan_interval: !!int 1500
+  connector: EthernetIP
+  type: !!int 5
+  address: 192.168.111.20
+  path: 1,0
+  items:
+    - name: Execution
+      type: bool
+      address: B3:0/3
+      script: |
+        local states = { [0]='Idle', [1]='Running' };
+        return states[result and 1 or 0];
+      sink:
+        transform:
+          type: script
+          template: Message.Data;
+    - name: GoodPartCount
+      type: int
+      address: N7:1
+      sink:
+        transform:
+          type: script
+          template: Message.Data;</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">console.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>console: &amp;console
+  name: console
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: Console
+  use_sink_transform: !!bool true
+  exclude_filter:
+    - rockwell/$SYSTEM</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Now, our output looks like this.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">TEXT</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>[console] Path: rockwell/Execution, Message: Idle
+[console] Path: rockwell/GoodPartCount, Message: 133
+[console] Path: rockwell/Execution, Message: Running</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Add MQTT Sink</h4>
+                        
+                        <p>Let's add an MQTT sink. For this we will add a new configuration file <code>mqttSink.yaml</code> and modify <code>main.yaml</code> to include the new sink.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">mqttSink.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>mqttSink: &amp;mqttSink
+  name: mqttSink
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: MQTT
+  address: wss.sharc.tech
+  port: !!int 1883
+  base_topic: DimeTutorial
+  qos: !!int 0
+  retain: !!bool true
+  use_sink_transform: !!bool true
+  exclude_filter:
+    - rockwell/$SYSTEM</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>app:
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+sinks:
+  - *console
+  - *mqttSink
+sources:
+  - *rockwell</pre>
+                            </div>
+                        </div>
+                        
+                        <p>The MQTT output looks just as we expected.</p>
+                        
+                        <h4>Add Ignition Sink</h4>
+                        
+                        <p>We can just as easily add an Ignition sink. We will create a new <code>ignitionSink.yaml</code> configuration and modify <code>main.yaml</code> to include it.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">ignitionSink.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>ignitionSink: &amp;ignitionSink
+  name: ignition
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: SparkplugB
+  address: localhost
+  port: !!int 1883
+  username: user
+  password: password
+  host_id: Acme
+  group_id: Chicago
+  node_id: Factory1
+  device_id: DIMETutorial
+  reconnect_interval: !!int 15000
+  birth_delay: !!int 10000
+  use_sink_transform: !!bool true
+  include_filter:
+    - rockwell</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>app:
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+sinks:
+  - *console
+  - *mqttSink
+  - *ignitionSink
+sources:
+  - *rockwell</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Adding Another Source</h4>
+                        
+                        <p>Let's add an MQTT source that we can send into Ignition. SHARC hardware publishes its availability and network information to <code>sharc/{serial-number}/evt/avail</code> and <code>sharc/{serial-number}/evt/net</code>, respectively. The topic and payload are the same across SHARCs, with the exception of the serial number.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">sharcs.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>sharcs: &amp;sharcs
+  name: sharcs
+  enabled: !!bool true
+  scan_interval: !!int 500
+  connector: MQTT
+  rbe: !!bool true
+  itemized_read: !!bool false
+  address: wss.sharc.tech
+  port: !!int 1883
+  qos: !!int 0
+  items:
+    - name: AllSharcs
+      enabled: !!bool true
+      address: sharc/+/evt/#</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>app:
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+sinks:
+  - *console
+  - *mqttSink
+  - *ignitionSink
+sources:
+  - *rockwell
+  - *sharcs</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Itemized and Non-itemized Read</h4>
+                        
+                        <p>Asynchronous sources contain an <code>itemized_read</code> property. This property controls the evaluation of the source's data items. In the case of MQTT we are subscribing to multiple topics (e.g. <code>sharc/+/evt/#</code>). Our subscription will never match the published topic; however, we will receive many messages that match the pattern of our subscribed topic. When <code>itemized_read</code> property is false, each received message will be processed and passed to the sinks. When <code>itemized_read</code> property is true, only the received messages that match one of the source's items will be processed and passed to the sinks.</p>
+                        
+                        <p>Here is an example of an <code>itemized_read=true</code> MQTT source configuration where only data from topic <code>sharc/08d1f953ffe4/evt/io/s1</code> will be processed, even though we are subscribing to <code>sharc/+/evt/#</code>.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">itemized_read=true example</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>mqttSource1: &amp;mqttSource1
+  name: mqttSource1
+  scan_interval: !!int 500
+  connector: MQTT
+  itemized_read: !!bool true
+  address: wss.sharc.tech
+  port: !!int 1883
+  qos: !!int 0
+  items:
+    - name: subscribe1
+      address: sharc/+/evt/#
+    - name: ffe4Sensor
+      address: sharc/08d1f953ffe4/evt/io/s1</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Item Script</h4>
+                        
+                        <p>The source's <code>item_script</code> will be executed for every single item. This is helpful with asynchronous sources and sources where the payload format is similar. In our case, we can leverage the <code>item_script</code> to process every incoming message.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">sharcs.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>sharcs: &amp;sharcs
+  name: sharcs
+  enabled: !!bool true
+  scan_interval: !!int 500
+  connector: MQTT
+  rbe: !!bool true
+  itemized_read: !!bool false
+  address: wss.sharc.tech
+  port: !!int 1883
+  qos: !!int 0
+  item_script: |
+    print("data from: " .. this.Key);
+    return nil;
+  items:
+    - name: AllSharcs
+      enabled: !!bool true
+      address: sharc/+/evt/#</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Here is the output.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">TEXT</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>data from: sharc/08d1f9540118/evt/mqtt
+data from: sharc/08d1f9540118/evt/net
+data from: sharc/08d1f9540118/evt/rc
+data from: sharc/08d1f9540118/evt/ver
+data from: sharc/08d1f9540118/evt/avail
+data from: sharc/08d1f9540074/evt/sensor
+data from: sharc/08d1f9540074/evt/mqtt
+data from: sharc/08d1f9540074/evt/net
+data from: sharc/08d1f9540074/evt/rc
+data from: sharc/08d1f9540074/evt/ver
+data from: sharc/08d1f9540074/evt/avail
+...</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Emit New Messages</h4>
+                        
+                        <p>The above example only prints the incoming data's path to screen. We need to create new messages that can be passed to our sinks. We can do this with the <code>emit</code> function call.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">sharcs.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>sharcs: &amp;sharcs
+  name: sharcs
+  enabled: !!bool true
+  scan_interval: !!int 500
+  connector: MQTT
+  rbe: !!bool true
+  itemized_read: !!bool false
+  address: wss.sharc.tech
+  port: !!int 1883
+  qos: !!int 0
+  init_script: |
+    json = require('json');
+    stringx = require('pl.stringx');
+  item_script: |
+    local path_slugs = stringx.split(this.Key, '/');
+    local sharc_serial = path_slugs[2];
+    local sharc_event = path_slugs[4];
+    local payload = json.decode(result).v;
+    if sharc_event == "avail" then
+      emit("./" .. sharc_serial .. "/availabile", payload==true and true or false);
+    elseif sharc_event == "net" then
+      emit("./" .. sharc_serial .. "/network/interface", payload.type);
+      emit("./" .. sharc_serial .. "/network/ip", payload.ip);
+      emit("./" .. sharc_serial .. "/network/subnet_mask", payload.mask);
+      emit("./" .. sharc_serial .. "/network/gateway", payload.gw);
+      emit("./" .. sharc_serial .. "/network/mac", payload.mac);
+    end
+    return nil;
+  items:
+    - name: AllSharcs
+      enabled: !!bool true
+      address: sharc/+/evt/#</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">ignition.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>ignitionSink: &amp;ignitionSink
+  name: ignition
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: SparkplugB
+  address: localhost
+  port: !!int 1883
+  username: user
+  password: password
+  host_id: Acme
+  group_id: Chicago
+  node_id: Factory1
+  device_id: DIMETutorial
+  reconnect_interval: !!int 15000
+  birth_delay: !!int 10000
+  #use_sink_transform: !!bool true
+  include_filter:
+    - rockwell
+    - sharcs</pre>
+                            </div>
+                        </div>
+                        
+                        <p>The result is that six new messages are created and passed to the sinks for every SHARC.</p>
+                        
+                        <h3>Tutorial 2</h3>
+                        
                         <h4>Writing to console and log</h4>
                         
                         <p>Let's start with something simple. We will use a Script source to generate random numbers and start with a single file configuration.</p>
@@ -2614,9 +3163,168 @@ graph LR
     style MainYAML fill:#0891b2,stroke:#0e7490,color:#fff
                         </pre>
                         
-                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre># Console Sink Configuration
+console: &console
+  name: console
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: Console
+  #use_sink_transform: !!bool true
+  exclude_filter:
+    - rockwell
+    - spb/$SYSTEM
+
+# Ignition SparkplugB Sink Configuration
+ignition: &ignition
+  name: ignition
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: SparkplugB
+  address: localhost
+  port: !!int 1883
+  username: user
+  password: password
+  host_id: Acme
+  group_id: Chicago
+  node_id: Factory1
+  device_id: DIME1
+  reconnect_interval: !!int 15000
+  birth_delay: !!int 10000
+  exclude_filter:
+    - rockwell/$SYSTEM
+    - spb
+
+# InfluxDB Sink Configuration
+influx: &influx
+  name: influx
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: InfluxLP
+  address: https://us-east-1-1.aws.cloud2.influxdata.com
+  token: holjd83YjHjuQg7ne1Gt84w_zZYGzfmvHBsr3RPNvIJLzmdhas6PvdEIQ1jeTNSYd1u51wzrEf8qmf6hHYy4Lg==
+  bucket_name: DIME
+  use_sink_transform: !!bool false
+  exclude_filter:
+    - rockwell
+    - spb/$SYSTEM
+
+# Rockwell EthernetIP Source Configuration
+rockwell: &rockwell
+  name: rockwell
+  enabled: !!bool true
+  scan_interval: !!int 1500
+  connector: EthernetIP
+  rbe: !!bool true
+  type: micrologix
+  address: 192.168.111.20
+  path: 1,0
+  log: !!int 0
+  timeout: !!int 1000
+  bypass_ping: !!bool false
+  init_script: ~
+  enter_script: ~
+  exit_script: ~
+  deinit_script: ~
+  strip_path_prefix: !!bool false
+  items:
+    - name: boolToCache
+      enabled: !!bool true
+      type: bool
+      address: B3:0/2
+      script: |
+        set('boolTag', result);
+        return nil;
+    - name: boolFromCache
+      enabled: !!bool true
+      script: |
+        return cache('boolTag', false);
+    - name: Execution
+      enabled: !!bool true
+      type: bool
+      address: B3:0/3
+      script: |
+        local m = { [0]='Ready', [1]='Active' };
+        return m[result and 1 or 0];
+    - name: GoodPartCount
+      enabled: !!bool true
+      type: int
+      address: N7:1
+
+# SparkplugB Source Configuration
+spb: &spb
+  name: spb
+  enabled: !!bool true
+  scan_interval: !!int 1000
+  connector: SparkplugB
+  rbe: !!bool true
+  itemized_read: !!bool false
+  address: localhost
+  port: !!int 1883
+  username: user
+  password: password
+  clean_session: !!bool true
+  qos: !!int 0
+  init_script: |
+    import('System');
+    json = require('json');
+    get_metric_value = function(metric)
+      local dt = Convert.ToInt32(metric.Datatype);
+      local value = nil;
+      if dt == 12 then
+        value = metric.StringValue:ToString();
+      elseif dt == 11 then
+        value = Convert.ToBoolean(metric.BooleanValue);
+      elseif dt == 10 then
+        value = Convert.ToDouble(metric.DoubleValue);
+      elseif dt == 9 then
+        value = Convert.ToDouble(metric.FloatValue);
+      elseif dt == 8 or dt == 4 then
+        value = Convert.ToInt32(metric.LongValue);
+      elseif dt <= 7 then
+        value = Convert.ToInt32(metric.IntValue);
+      else
+        value = nil;
+      end
+      return value;
+    end
+  items:
+    - name: F1D1
+      address: spBv1.0/Chicago/DDATA/Factory1/DIME1
+      script: |
+        result = from_json(result);
+        for metric in luanet.each(result.Metrics) do;
+          local value = get_metric_value(metric);
+          emit("./" .. metric.Name:ToString(), value);
+        end;
+        return nil;
+
+# Main Application Configuration
+app:
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+
+# Sink Definitions (Data Outputs)
+sinks:
+  - *console
+  - *ignition
+  - *influx
+
+# Source Definitions (Data Inputs)
+sources:
+  - *spb
+  - *rockwell</pre>
+                            </div>
+                        </div>
                         
                         <h3>Example 2</h3>
+                        
                         <pre class="mermaid">
 graph LR
     MainYAML2["main.yaml"]
@@ -2679,13 +3387,13 @@ graph LR
     Agent --> MTCAgent
     SHDR --> SHDRAdapter
     
-    style Haas fill:#7c3aed,stroke:#6d28d9,color:#fff
-    style Mazak fill:#7c3aed,stroke:#6d28d9,color:#fff
-    style Rockwell2 fill:#7c3aed,stroke:#6d28d9,color:#fff
-    style Option143 fill:#d97706,stroke:#b45309,color:#fff
-    style PseudoAgent fill:#d97706,stroke:#b45309,color:#fff
-    style MazakAgent fill:#d97706,stroke:#b45309,color:#fff
-    style RegDB fill:#d97706,stroke:#b45309,color:#fff
+    style Haas fill:#2563eb,stroke:#1e40af,color:#fff
+    style Mazak fill:#2563eb,stroke:#1e40af,color:#fff
+    style Rockwell2 fill:#2563eb,stroke:#1e40af,color:#fff
+    style Option143 fill:#6b7280,stroke:#4b5563,color:#fff
+    style PseudoAgent fill:#6b7280,stroke:#4b5563,color:#fff
+    style MazakAgent fill:#6b7280,stroke:#4b5563,color:#fff
+    style RegDB fill:#6b7280,stroke:#4b5563,color:#fff
     style Haas1 fill:#2563eb,stroke:#1e40af,color:#fff
     style Haas2 fill:#2563eb,stroke:#1e40af,color:#fff
     style Mazak1 fill:#2563eb,stroke:#1e40af,color:#fff
@@ -2700,7 +3408,280 @@ graph LR
     style MainYAML2 fill:#0891b2,stroke:#0e7490,color:#fff
                         </pre>
                         
-                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre># Application Configuration
+app:
+  license: 0000-0000-0000-0000-0000-0000-0000-0000
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+
+# Source Configurations
+sources:
+  # Haas XML Web Scraper
+  - name: haas2
+    enabled: !!bool true
+    scan_interval: !!int 2000
+    connector: XMLWebScraper
+    rbe: !!bool true
+    uri: http://192.168.111.216:8082/current
+    namespaces:
+      mt: urn:mtconnect.org:MTConnectStreams:1.2
+    sink:
+      transform:
+        type: script
+        template: Message.Data
+    init_script: ~
+    enter_script: ~
+    exit_script: ~
+    deinit_script: ~
+    item_script: |
+      return result.InnerText
+    items:
+      - name: SpindleLoad
+        enabled: !!bool true
+        address: //mt:Message[@dataItemId='sp2maxpwr']
+        sink:
+          mtconnect: Device[name=device1]/Controller/Load[category=Sample,id=SpindleLoad]
+
+  # Haas TCP ASCII Connector
+  - name: haas5
+    enabled: !!bool true
+    scan_interval: !!int 7000
+    connector: TcpASCII
+    rbe: !!bool true
+    itemized_read: !!bool false
+    address: 192.168.111.216
+    port: !!int 5051
+    read_delay: !!int 600
+    sink:
+      transform:
+        type: script
+        template: Message.Data
+    init_script: |
+      stringx = require('pl.stringx');
+      
+      clean_response = function(response)
+        response = stringx.replace(response, '>', '');
+        response = stringx.replace(response, '\\r\\n', '');
+        return response;
+      end
+      
+      get_value = function(response)
+        response = stringx.split(response, ',');
+        response = stringx.strip(response[2]);
+        return response;
+      end
+    item_script: |
+      --print(this.Name);
+      local response = clean_response(result);
+      --print('clean: ' .. response);
+      local value = get_value(response);
+      --print('value: ' .. value);
+      return value;
+    items:
+      - name: SerialNumber
+        enabled: !!bool true
+        address: ?Q100
+        sink:
+          mtconnect: Device[name=device1]/Controller/SerialNumber[category=Event]
+      - name: SoftwareVersion
+        enabled: !!bool true
+        address: ?Q101
+        sink:
+          mtconnect: Device[name=device1]/Controller/Application[category=Event,subType=Version]
+      - name: ModelNumber
+        enabled: !!bool true
+        address: ?Q102
+        sink:
+          mtconnect: Device[name=device1]/Controller/Hardware[category=Event,subType=Model]
+      - name: Mode
+        enabled: !!bool true
+        address: ?Q104
+        sink:
+          mtconnect: Device[name=device1]/Controller/ControllerMode[category=Event]
+      - name: ToolChanges
+        enabled: !!bool false
+        address: ?Q200
+      - name: ToolNumber
+        enabled: !!bool true
+        address: ?Q201
+        sink:
+          mtconnect: Device[name=device1]/Controller/ToolNumber[category=Event]
+      - name: PowerOnTime
+        enabled: !!bool true
+        address: ?Q300
+        sink:
+          mtconnect: Device[name=device1]/Controller/EquipmentTimer[category=Event,subType=Powered]
+      - name: MotionTime
+        enabled: !!bool true
+        address: ?Q301
+        sink:
+          mtconnect: Device[name=device1]/Controller/EquipmentTimer[category=Event,subType=Working]
+      - name: LastCycleTime
+        enabled: !!bool true
+        address: ?Q303
+        sink:
+          mtconnect: Device[name=device1]/Controller/ProcessTimer[category=Sample,subType=Process]
+      - name: PreviousCycleTime
+        enabled: !!bool true
+        address: ?Q304
+        sink:
+          mtconnect: Device[name=device1]/Controller/ProcessTimer[category=Sample,subType=Process]
+      - name: PartCount1
+        enabled: !!bool true
+        address: ?Q402
+        sink:
+          mtconnect: Device[name=device1]/Controller/PartCount[category=Event,subType=All]
+      - name: PartCount2
+        enabled: !!bool true
+        address: ?Q403
+        sink:
+          mtconnect: Device[name=device1]/Controller/PartCount[category=Event,subType=All]
+      - name: ThreeInOne
+        enabled: !!bool true
+        address: ?Q500
+        script: |
+          result = clean_response(result);
+          result = stringx.split(result, ',');
+          emit_mtconnect('./Program', stringx.strip(result[2]), 'Device[name=device1]/Controller/Program[category=Event,subType=Main]');
+          --emit_mtconnect('./Status', stringx.strip(result[3]), 'Device[name=device1]/Controller/Execution[category=Event]');
+          emit_mtconnect('./PartCount3', stringx.strip(result[5]), 'Device[name=device1]/Controller/PartCount[category=Event,subType=All]');
+          return nil;
+      - name: XActualPosition
+        enabled: !!bool true
+        address: ?Q600 5041
+        sink:
+          mtconnect: Device[name=device1]/Controller/Position[category=Sample,subType=Actual,name=Xpos]
+      - name: YActualPosition
+        enabled: !!bool true
+        address: ?Q600 5042
+        sink:
+          mtconnect: Device[name=device1]/Controller/Position[category=Sample,subType=Actual,name=Ypos]
+      - name: ZActualPosition
+        enabled: !!bool true
+        address: ?Q600 5043
+        sink:
+          mtconnect: Device[name=device1]/Controller/Position[category=Sample,subType=Actual,name=Zpos]
+      - name: SpindleSpeed
+        enabled: !!bool true
+        address: ?Q600 3027
+        sink:
+          mtconnect: Device[name=device1]/Controller/SpindleSpeed[category=Sample,subType=Actual,name=SRPM]
+      - name: SpindleLoad
+        enabled: !!bool true
+        address: ?Q600 1098
+        sink:
+          mtconnect: Device[name=device1]/Controller/Load[category=Sample,subType=Actual,name=SLoad]
+      - name: EmergencyStop
+        enabled: !!bool true
+        address: ?Q600 11070
+        sink:
+          mtconnect: Device[name=device1]/Controller/EmergencyStop[category=Event,name=EStop]
+
+  # Mazak MTConnect Agent
+  - name: mazak1
+    enabled: !!bool true
+    scan_interval: !!int 1000
+    connector: MTConnectAgent
+    rbe: !!bool true
+    itemized_read: !!bool true
+    address: mtconnect.mazakcorp.com
+    port: !!int 5719
+    init_script: ~
+    strip_path_prefix: !!bool false
+    sink:
+      transform:
+        type: script
+        template: >-
+          Message.Data[0].Value
+    items:
+      - name: XLoad
+        address: Xload
+        sink:
+          mtconnect: Device[Name=device1]/Axes/Linear[Name=X]/Load[Category=Sample]
+
+  # Rockwell EthernetIP Connector
+  - name: rock1
+    enabled: !!bool true
+    scan_interval: !!int 1000
+    connector: EthernetIP
+    rbe: !!bool true
+    type: micrologix
+    address: 192.168.111.20
+    path: 1,0
+    log: !!int 0
+    timeout: !!int 1000
+    bypass_ping: !!bool true
+    sink:
+      transform:
+        type: script
+        template: Message.Data
+    items:
+      - name: Execution
+        enabled: !!bool true
+        type: bool
+        address: B3:0/3
+        script: |
+          local m = { [0]='Ready', [1]='Active' };
+          return m[result and 1 or 0];
+        sink:
+          mtconnect: Device[name=device2]/Controller/Path/Execution[category=Event]
+
+# Sink Configurations
+sinks:
+  # Console Output
+  - name: console
+    enabled: !!bool true
+    scan_interval: !!int 1000
+    connector: Console
+    use_sink_transform: !!bool true
+    exclude_filter:
+      - /\$SYSTEM
+
+  # MQTT Publisher
+  - name: mqtt1
+    enabled: !!bool true
+    scan_interval: !!int 1000
+    connector: MQTT
+    address: wss.sharc.tech
+    port: !!int 1883
+    base_topic: mtconnect_demo
+    qos: !!int 0
+    retain: !!bool true
+    use_sink_transform: !!bool true
+    exclude_filter:
+      - /\$SYSTEM
+
+  # MTConnect Agent
+  - name: agent
+    enabled: !!bool true
+    scan_interval: !!int 1000
+    connector: MTConnectAgent
+    port: !!int 5000
+    use_sink_transform: !!bool true
+    exclude_filter:
+      - /\$SYSTEM
+
+  # SHDR Output
+  - name: shdr
+    enabled: !!bool true
+    scan_interval: !!int 1000
+    connector: MTConnectSHDR
+    port: !!int 7878
+    device_key: ~
+    heartbeat_interval: !!int 10000
+    filter_duplicates: !!bool true
+    use_sink_transform: !!bool true
+    exclude_filter:
+      - /\$SYSTEM</pre>
+                            </div>
+                        </div>
                         
                         <h2>Storage Pipeline</h2>
                         <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
