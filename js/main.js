@@ -34,56 +34,65 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Play button functionality for GIF demo
-    const playButton = document.querySelector('.play-button');
-    const demoPoster = document.querySelector('.demo-poster');
-    const demoGif = document.querySelector('.demo-gif');
-    
-    if (playButton && demoPoster && demoGif) {
-        // Preload the GIF
-        const preloadGif = new Image();
-        preloadGif.src = demoGif.src;
+    // Play button functionality for GIF demos
+    function initDemoPlayer(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
         
-        playButton.addEventListener('click', function() {
-            // Create a new GIF element to ensure fresh start
-            const newGif = document.createElement('img');
-            newGif.src = demoGif.src + '?t=' + new Date().getTime();
-            newGif.className = 'demo-gif';
-            newGif.style.display = 'none';
+        const playButton = container.querySelector('.play-button');
+        const demoPoster = container.querySelector('.demo-poster');
+        const demoGif = container.querySelector('.demo-gif');
+        
+        if (playButton && demoPoster && demoGif) {
+            // Preload the GIF
+            const preloadGif = new Image();
+            preloadGif.src = demoGif.src;
             
-            // Wait for the new GIF to load before transitioning
-            newGif.onload = function() {
-                // Hide poster and play button with fade effect
-                demoPoster.style.opacity = '0';
-                playButton.style.opacity = '0';
+            playButton.addEventListener('click', function() {
+                // Create a new GIF element to ensure fresh start
+                const newGif = document.createElement('img');
+                newGif.src = demoGif.src + '?t=' + new Date().getTime();
+                newGif.className = 'demo-gif';
+                newGif.style.display = 'none';
                 
+                // Wait for the new GIF to load before transitioning
+                newGif.onload = function() {
+                    // Hide poster and play button with fade effect
+                    demoPoster.style.opacity = '0';
+                    playButton.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        demoPoster.style.display = 'none';
+                        playButton.style.display = 'none';
+                        newGif.style.display = 'block';
+                    }, 300);
+                };
+                
+                // Replace the old GIF with the new one
+                demoGif.parentNode.replaceChild(newGif, demoGif);
+                
+                // Add a replay button after GIF loads
                 setTimeout(() => {
-                    demoPoster.style.display = 'none';
-                    playButton.style.display = 'none';
-                    newGif.style.display = 'block';
-                }, 300);
-            };
-            
-            // Replace the old GIF with the new one
-            demoGif.parentNode.replaceChild(newGif, demoGif);
-            
-            // Add a replay button after GIF loads
-            setTimeout(() => {
-                const replayBtn = document.createElement('button');
-                replayBtn.className = 'replay-button';
-                replayBtn.innerHTML = '↻ Replay';
-                replayBtn.addEventListener('click', function() {
-                    const reloadGif = document.createElement('img');
-                    reloadGif.src = newGif.src.split('?')[0] + '?t=' + new Date().getTime();
-                    reloadGif.className = 'demo-gif';
-                    reloadGif.style.display = 'block';
-                    newGif.parentNode.replaceChild(reloadGif, newGif);
-                    replayBtn.remove();
-                });
-                document.getElementById('demo-container').appendChild(replayBtn);
-            }, 1000);
-        });
+                    const replayBtn = document.createElement('button');
+                    replayBtn.className = 'replay-button';
+                    replayBtn.innerHTML = '↻ Replay';
+                    replayBtn.addEventListener('click', function() {
+                        const reloadGif = document.createElement('img');
+                        reloadGif.src = newGif.src.split('?')[0] + '?t=' + new Date().getTime();
+                        reloadGif.className = 'demo-gif';
+                        reloadGif.style.display = 'block';
+                        newGif.parentNode.replaceChild(reloadGif, newGif);
+                        replayBtn.remove();
+                    });
+                    container.appendChild(replayBtn);
+                }, 1000);
+            });
+        }
     }
+    
+    // Initialize both demo players
+    initDemoPlayer('demo-container');
+    initDemoPlayer('demo-container-2');
     
     // Add scroll effect to navbar
     let lastScroll = 0;
