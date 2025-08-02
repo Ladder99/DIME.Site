@@ -640,7 +640,7 @@ footer {
 
 .footer-content {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1fr 1fr 2fr;
     gap: var(--space-2xl);
     margin-bottom: var(--space-xl);
 }
@@ -671,6 +671,23 @@ footer {
     padding-top: var(--space-xl);
     border-top: 1px solid var(--neutral-800);
     color: var(--neutral-400);
+}
+
+.footer-logo-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.footer-logo {
+    height: 80px;
+    width: auto;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.footer-logo:hover {
+    opacity: 1;
 }
 
 /* Platform Page Specific */
@@ -3428,6 +3445,10 @@ footer {
     .benefits-grid,
     .footer-content {
         grid-template-columns: 1fr;
+    }
+    
+    .footer-logo-section {
+        display: none;
     }
     
     h1 { font-size: 2rem; }
