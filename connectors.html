@@ -1010,7 +1010,7 @@
                     </a>
                     <a href="#" class="quick-link-item" data-doc="scripting">
                         <span class="icon">🔧</span>
-                        <span>Scripting</span>
+                        <span>Configuration</span>
                     </a>
                     <a href="#" class="quick-link-item" data-doc="examples">
                         <span class="icon">💡</span>
@@ -1675,9 +1675,404 @@ graph LR
         function generateScriptingDoc() {
             return `
                 <div class="doc-page">
-                    <h1>🔧 Scripting in DIME</h1>
+                    <h1>🔧 Configuration in DIME</h1>
                     
                     <section class="doc-section">
+                        <h2>Data Collection Layer</h2>
+                        
+                        <p>Configuration files are stored in the ./Configs solution folder. On DIME startup, all *.yaml files are read from the folder, including main.yaml. The entire configuration can be stored as main.yaml, or can be split across multiple files, but main.yaml must exist as it is the last read that can contain YAML references to other files. There are three sections in a configuration file: app, sinks, and sources.</p>
+                        
+                        <h3>App Configuration Section</h3>
+                        
+                        <p>The app configuration section contains basic runtime information.</p>
+                        
+                        <div class="parameter-table-wrapper">
+                            <div class="parameter-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>license</strong></td>
+                                            <td>Application license key. DIME will run for 15 minutes without a valid license.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>ring_buffer</strong></td>
+                                            <td>Message buffer size between sources and sinks.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>http_server_uri</strong></td>
+                                            <td>Status server HTTP endpoint. Set to <a href="http://*:9999/">http://*:9999/</a> to make available externally.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>ws_server_uri</strong></td>
+                                            <td>Status server Websocket endpoint. Set to <a href="http://0.0.0.0:9998/">http://0.0.0.0:9998/</a> to make available externally.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <h3>Sinks Configuration Section</h3>
+                        
+                        <p>The sinks configuration section is a list of configured sinks. Each sink contains information required for execution.</p>
+                        
+                        <div class="parameter-table-wrapper">
+                            <div class="parameter-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>name</strong></td>
+                                            <td>Unique connector name. The connector name must be unique across the entire configuration.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>enabled</strong></td>
+                                            <td>Is the connector enabled to run?</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>connector</strong></td>
+                                            <td>Connector type, see the Reference section for individual connector types.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>scan_interval</strong></td>
+                                            <td>Message scanning frequency in milliseconds. When a scan interval is too small, you will be warned about execution overruns in the logs.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>exclude_filter</strong></td>
+                                            <td>A list of message paths to exclude from output. Message paths are regular expressions in the format of: connectorName/itemName or connectorName/\\$SYSTEM/systemProperty.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>include_filter</strong></td>
+                                            <td>A list of regular expression message paths to include in output. Inclusion filter takes precedence over the exclusion filter.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>use_sink_transform</strong></td>
+                                            <td>Should the sink transform defined on source connector be executed?</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <h3>Sources Configuration Section</h3>
+                        
+                        <p>The sources configuration section is a list of configured sources.</p>
+                        
+                        <div class="parameter-table-wrapper">
+                            <div class="parameter-table">
+                                <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>name</strong></td>
+                                    <td>Unique connector name. The connector name must be unique across the entire configuration.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>enabled</strong></td>
+                                    <td>Is the connector enabled to run?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>connector</strong></td>
+                                    <td>Connector type, see the Reference section for individual connector types.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>scan_interval</strong></td>
+                                    <td>Message scanning frequency in milliseconds. When a scan interval is too small, you will be warned about execution overruns in the logs.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>rbe</strong></td>
+                                    <td>Report data by exception. Only sends data to sink when the value changes from the previous value.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>itemized_read</strong></td>
+                                    <td>Process incoming data based on items array. Itemized read is relevant to queuing source connectors only. When set to true, all connector items are iterated and a matching incoming message is found in the inbox/incoming buffer. Unmatched inbox messages are dropped. When set to false, the inbox/incoming buffer is iterated and a matching item is found in the items array. If no item is found, the raw incoming message value is passed to the outbox.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>lang_script</strong></td>
+                                    <td>Python or Lua scripting language selection.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>paths_script</strong></td>
+                                    <td>Additional absolute or relative paths for external script locations.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>init_script</strong></td>
+                                    <td>Connector startup script.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>deinit_script</strong></td>
+                                    <td>Connector shutdown script.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>enter_script</strong></td>
+                                    <td>Connector execution loop entry script.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>exit_script</strong></td>
+                                    <td>Connector execution loop exit script.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>item_script</strong></td>
+                                    <td>Script executed for each item when undefined at item level.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>strip_path_prefix</strong></td>
+                                    <td>Remove connector name from message path placed in the outbox. For example if the full message path is connectorName/itemName, the message path will be shortened to itemName.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>create_dummy_message_on_startup</strong></td>
+                                    <td>Create a zero value message for each item on connector startup. This is helpful for queuing source connectors to make the sink aware of all possible message paths.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>sink</strong></td>
+                                    <td>Sink metadata contains information necessary to support the sink use_sink_transform property. When combined with use_sink_transform: true, the transform template will execute for every message in the outbox, resulting in varying output to the sink. Some sinks, such as Redis, require the message to contain the path, value, and timestamp. Other sinks, such as MTConnect, require the message to contain only the data since the message is handled differently.</td>
+                                </tr>
+                            </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <p>Example message without sink transform:</p>
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">TEXT</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>Path: haas1/ActiveIconsList,
+Message: {"Path":"haas1/Icons","Data":"IDLE","Timestamp":1740334909}</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Example message with sink transform:</p>
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">TEXT</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>Path: haas1/ActiveIconsList,
+Message: "IDLE"</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Items</h4>
+                        
+                        <p>The items list contains individual items to read and process from the data source.</p>
+                        
+                        <div class="parameter-table-wrapper">
+                            <div class="parameter-table">
+                                <table>
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>name</strong></td>
+                                    <td>Unique item name.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>enabled</strong></td>
+                                    <td>Is item enabled?</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>rbe</strong></td>
+                                    <td>Report data by exception override at item level.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>every</strong></td>
+                                    <td>Process this item every X occurences of the connector's scan interval.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>address</strong></td>
+                                    <td>Source data address. Formatting is specific to connector type.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>script</strong></td>
+                                    <td>Lua script executed after data source is read. The result variable contains the read content.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>sink</strong></td>
+                                    <td>Sink metadata. See the connector sink property. Support for MTConnect DataItem paths is handled through individual item's sink property.</td>
+                                </tr>
+                            </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <h3>Scripting</h3>
+                        
+                        <p>Lua and Python are the scripting languages used throughout the configuration. Each configuration's scriptable properties include:</p>
+                        
+                        <div class="parameter-table-wrapper">
+                            <div class="parameter-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Script Property</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><strong>init_script</strong></td>
+                                            <td>Runs on connector startup. Here is where we want to import any additional libraries, define any custom functions, or create persistent variables.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>deinit_script</strong></td>
+                                            <td>Runs on connector shutdown. Here is where we clean up any resources before shutdown.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>enter_script</strong></td>
+                                            <td>Runs before every execution cycle.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>exit_script</strong></td>
+                                            <td>Runs after every execution cycle.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>item_script</strong></td>
+                                            <td>Runs every execution for every item in the items list, unless the item has a script property defined.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>items[].script</strong></td>
+                                            <td>Runs every execution for that item. This property takes precedence over the top level item_script.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <pre class="mermaid">
+graph TB
+    Start["Connector Startup ▶"] --> Init["init_script"]
+    Init --> Enter["enter_script"]
+    Enter --> Loop["Execution Loop ⟲"]
+    Loop --> ItemLoop["For Each Item"]
+    ItemLoop --> Exit["exit_script"]
+    Exit --> Deinit["deinit_script"]
+    Deinit --> Stop["Connector Shutdown ⏹"]
+    
+    subgraph ItemLoop["For Each Item"]
+        LoopStart(("○ Start Loop"))
+        LoopStart --> CheckItem{"Does item have a<br/>script property?"}
+        CheckItem -->|Yes| ExecuteItem["Execute<br/>item.script"]
+        CheckItem -->|No| CheckConnector{"Does connector have an<br/>item_script property?"}
+        CheckConnector -->|Yes| ExecuteTopLevel["Execute top<br/>level<br/>item_script"]
+        CheckConnector -->|No| Continue["Continue<br/>Loop"]
+        ExecuteItem --> LoopEnd(("● Loop Back"))
+        ExecuteTopLevel --> LoopEnd
+        Continue --> LoopEnd
+        LoopEnd --> LoopStart
+    end
+                        </pre>
+                        
+                        <h4>The Result Variable</h4>
+                        
+                        <p>When a source device is read, the value returned from the device becomes available to the script context as the result variable.</p>
+                        
+                        <h4>Caches</h4>
+                        
+                        <p>When a value is read from the source device it is stored in cache. This means that the latest value can be recalled by its path within a script.</p>
+                        
+                        <p>In the example on the right, we are adding two numbers together and then deciding if that number is big or not. Value2 call to set(name, value) puts the value into user cache. Returning nil means that the result of value2 item will be dropped before it reaches a sink. The sum item recalls both value1 and value2 items and adds them together by calling cache(path, defaultValue). Notice that there are multiple ways to address a cached item:</p>
+                        
+                        <ul>
+                            <li><strong>Absolute path</strong> – Name of the connector followed by the item name (e.g. script1/value1). This means that you can access values from other connectors as well.</li>
+                            <li><strong>Relative path</strong> – Period, referring to the current connector, followed by the item name (e.g. ./value1).</li>
+                            <li><strong>Shorthand</strong> – Just the item name (e.g. value1).</li>
+                        </ul>
+                        
+                        <h4>This Variable</h4>
+                        
+                        <p>Variable this has a different meaning in different contexts. In the init_script, deinit_script, enter_script, exit_script, this is a reference to the connector instance. In the item_script and item's script, this is a reference to the item instance.</p>
+                        
+                        <h4>Available Functions</h4>
+                        
+                        <div class="parameter-table-wrapper">
+                            <div class="parameter-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Function</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>value = cache(path, defaultValue)</code></td>
+                                            <td>Retrieve value from caches. Caches are shared across connectors.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>value, timestamp = cache_ts(path, defaultValue)</code></td>
+                                            <td>Retrieve value and timestamp from caches.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>value = set(key, value)</code></td>
+                                            <td>Set value into user cache.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>value = env(name, defaultValue)</code></td>
+                                            <td>Retrieve environment variable.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>value = emit(path, value)</code></td>
+                                            <td>Create a new sample.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>value = emit_mtconnect(path, value, mtcPath)</code></td>
+                                            <td>Create a new sample with MTConnect sink metadata.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>object = from_string(string)</code></td>
+                                            <td>Deserialize JSON string.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>string = to_string(object)</code></td>
+                                            <td>Serialize object to JSON string.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>connector = connector()</code></td>
+                                            <td>Retrieve the connector instance.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>configuration = configuration()</code></td>
+                                            <td>Retrieve the connector's configuration instance.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>value = array_from_table(table)</code></td>
+                                            <td>Convert Lua table to a .NET array.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Storage Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Analytics Pipeline</h2>
+                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h2>Anomaly Detection Pipeline</h2>
                         <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
                     </section>
                     
@@ -1695,6 +2090,464 @@ graph LR
                     
                     <section class="doc-section">
                         <h2>Data Collection Layer</h2>
+                        
+                        <h3>Tutorial 1</h3>
+                        
+                        <h4>Writing to console and log</h4>
+                        
+                        <p>Let's start with something simple. We will use a Script source to generate random numbers and start with a single file configuration.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>console: &amp;console
+  name: console
+  connector: Console
+  
+log: &amp;log
+  name: log
+  connector: Logger
+  
+script: &amp;script
+  name: script
+  connector: Script
+  items:
+    - name: number1
+      script: return math.random(100);
+    - name: number2
+      script: return math.random(200);
+  
+app:
+  license: AAAA-BBBB-CCCC-DDDD-EEEE-FFFF-GGGG-HHHH
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+sinks:
+  - *console
+  - *log
+sources:
+  - *script</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Now let's disable the Logger sink and exclude system messages from the output.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>console: &amp;console
+  name: console
+  connector: Console
+  exclude_filter:
+    - script/$SYSTEM
+  
+log: &amp;log
+  name: log
+  connector: Logger
+  enabled: !!bool false
+  
+script: &amp;script
+  name: script
+  connector: Script
+  items:
+    - name: number1
+      script: return math.random(100);
+    - name: number2
+      script: return math.random(200);
+  
+app:
+  license: AAAA-BBBB-CCCC-DDDD-EEEE-FFFF-GGGG-HHHH
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+sinks:
+  - *console
+  - *log
+sources:
+  - *script</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Split configuration across multiple files.</h4>
+                        
+                        <p>Splitting your configuration across multiple files makes it more modular and manageable. Let's take the above configuration and create multiple files.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">main.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>app:
+  license: AAAA-BBBB-CCCC-DDDD-EEEE-FFFF-GGGG-HHHH
+  ring_buffer: !!int 4096
+  http_server_uri: http://127.0.0.1:9999/
+  ws_server_uri: ws://127.0.0.1:9998/
+sinks:
+  - *console   
+sources:
+  - *script</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">console.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>console: &amp;console
+  name: console
+  connector: Console
+  exclude_filter:
+    - script/$SYSTEM</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">script.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>script: &amp;script
+  name: script
+  connector: Script
+  items:
+    - name: number1
+      script: return math.random(100);
+    - name: number2
+      script: return math.random(200);</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Write data to an embedded MTConnect Agent.</h4>
+                        
+                        <p>Let's add a MTConnectAgent sink to our configuration.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">agent.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>agent: &amp;agent
+  name: agent
+  connector: MTConnectAgent
+  port: !!int 5000
+  exclude_filter:
+    - script/$SYSTEM</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Run DIME and navigate to <a href="http://localhost:5000/current">http://localhost:5000/current</a>. You will notice that none of our custom data items are there. We must mark up our sources with MTConnect syntax.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">script.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>script: &amp;script
+  name: script
+  connector: Script
+  items:
+    - name: number1
+      script: return math.random(100);
+      sink:
+        mtconnect: Device[name=device1]/Controller/Mass[category=Sample]
+    - name: number2
+      script: return math.random(200);
+      sink:
+        mtconnect: Device[name=device1]/Controller/Load[category=Sample]</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Add another source.</h4>
+                        
+                        <p>Let's bring in data from a Haas controller and merge it with our Script source.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">haas.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>haas: &amp;haas
+  name: haas
+  connector: TcpASCII
+  address: 192.168.111.216
+  port: !!int 5051
+  read_delay: !!int 500
+  init_script: |
+    stringx = require('pl.stringx');
+    
+    clean_response = function(response)
+      response = stringx.replace(response, '>', '');
+      response = stringx.replace(response, '\\r\\n', '');
+      return response;
+    end
+    
+    get_value = function(response)
+      response = stringx.split(response, ',');
+      response = stringx.strip(response[2]);
+      return response;
+    end
+  item_script: |
+    local response = clean_response(result);
+    --print('clean: ' .. response);
+    local value = get_value(response);
+    --print('value: ' .. value);
+    return value;
+  items:
+    - name: PartCount1
+      address: ?Q402
+      sink:
+        mtconnect: Device[name=device1]/Controller/PartCount[category=Event,subType=All]</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Run DIME and navigate to <a href="http://localhost:5000/current">http://localhost:5000/current</a>.</p>
+                        
+                        <h4>Write data to an external MTConnect Agent.</h4>
+                        
+                        <p>Let's add a MTConnectSHDR sink to our configuration.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">shdr.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>shdr: &amp;shdr
+  name: shdr
+  connector: MTConnectSHDR
+  port: !!int 7878
+  device_key: ~
+  heartbeat_interval: !!int 10000
+  filter_duplicates: !!bool true</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Run DIME and telnet localhost 7878. You will notice that the system messages from both haas and script sources are being output. Let's exclude those.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">shdr.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>shdr: &amp;shdr
+  name: shdr
+  connector: MTConnectSHDR
+  port: !!int 7878
+  device_key: ~
+  heartbeat_interval: !!int 10000
+  filter_duplicates: !!bool true
+  exclusion_filter:
+    - script/$SYS
+    - haas/$SYSTEM</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Emit messages.</h4>
+                        
+                        <p>Sometimes querying a single piece of data can result in multiple observations. For this we can use the emit and emit_mtconnect scripting functions.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">haas.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>haas: &amp;haas
+  name: haas
+  connector: TcpASCII
+  address: 192.168.111.216
+  port: !!int 5051
+  read_delay: !!int 500
+  init_script: |
+    stringx = require('pl.stringx');
+    
+    clean_response = function(response)
+      response = stringx.replace(response, '>', '');
+      response = stringx.replace(response, '\\r\\n', '');
+      return response;
+    end
+    
+    get_value = function(response)
+      response = stringx.split(response, ',');
+      response = stringx.strip(response[2]);
+      return response;
+    end
+  item_script: |
+    local response = clean_response(result);
+    --print('clean: ' .. response);
+    local value = get_value(response);
+    --print('value: ' .. value);
+    return value;
+  items:
+    - name: PartCount1
+      address: ?Q402
+      sink:
+        mtconnect: Device[name=device1]/Controller/PartCount[category=Event,subType=All]
+    - name: ThreeInOne
+      address: ?Q500
+      script: |
+        result = clean_response(result);
+        result = stringx.split(result, ',');
+        --emit('./Program', stringx.strip(result[2]));
+        emit_mtconnect('./Program', stringx.strip(result[2]), 'Device[name=device1]/Controller/Program[category=Event,subType=Main]');
+        --emit('./Status', stringx.strip(result[3]));
+        emit_mtconnect('./Status', stringx.strip(result[3]), 'Device[name=device1]/Controller/Execution[category=Event]');
+        --emit('./PartCount3', stringx.strip(result[5]));
+        emit_mtconnect('./PartCount3', stringx.strip(result[5]), 'Device[name=device1]/Controller/PartCount[category=Event,subType=Good]');
+        return nil;</pre>
+                            </div>
+                        </div>
+                        
+                        <p>Run DIME and navigate to <a href="http://localhost:5000/current">http://localhost:5000/current</a>.</p>
+                        
+                        <h4>Add MTConnect Availability.</h4>
+                        
+                        <p>One thing we missed is to set the Availability of our MTConnect devices. For this we will use one of the system messages, $SYSTEM/IsConnected. For brevity, we will only modify the script source.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">script.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>script: &amp;script
+  name: script
+  connector: Script
+  items:
+    - name: availability
+      script:
+        this_avail = cache('./$SYSTEM/IsConnected', false) and 'AVAILABLE' or 'UNAVAILABLE';
+        that_avail = cache('haas/$SYSTEM/IsConnected', false) and 'AVAILABLE' or 'UNAVAILABLE';
+        emit_mtconnect('./avail1', this_avail, 'Device[name=device1]/Availability[category=Event]');
+        emit_mtconnect('./avail2', that_avail, 'Device[name=device2]/Availability[category=Event]');
+    - name: number1
+      script: return math.random(100);
+      sink:
+        mtconnect: Device[name=device1]/Controller/Mass[category=Sample]
+    - name: number2
+      script: return math.random(200);
+      sink:
+        mtconnect: Device[name=device1]/Controller/Load[category=Sample]</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Add an extended MTConnect data item.</h4>
+                        
+                        <p>Sometimes the observation we want to represent is not part of the MTConnect standard. For this we will use the x: namespace.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">script.yaml (partial)</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>    - name: number2
+      script: return math.random(200);
+      sink:
+        mtconnect: Device[name=device1]/Controller/x:Cpu[category=Sample]</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Add data from Haas MTConnect Agent.</h4>
+                        
+                        <p>We are currently collecting data from our asset using Haas Q commands. New generation controllers also expose a pseudo-MTConnect Agent on port 8082. Let's use a XML Web Scraper connector to grab its data.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">haas2.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>haas2: &amp;haas2
+  name: haas2
+  scan_interval: !!int 5000
+  connector: XMLWebScraper
+  uri: http://192.168.111.216:8082/current
+  namespaces:
+    mt: urn:mtconnect.org:MTConnectStreams:1.2
+  item_script: |
+    return result.InnerText
+  items:
+    - name: SpindleLoad   
+      address: //mt:Message[@dataItemId='sp2maxpwr']
+      sink:
+        mtconnect: Device[name=device1]/Controller/Load[category=Sample]</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Add data from an ASC Autoclave</h4>
+                        
+                        <p>Create the TCPListener object in your CPC instance per <a href="https://www.aschome.com/administrator/images/support/pdf/CPC%20-%20TCP%20Talker%20and%20Listener.pdf">https://www.aschome.com/administrator/images/support/pdf/CPC%20-%20TCP%20Talker%20and%20Listener.pdf</a>.</p>
+                        
+                        <div class="code-example" style="margin-bottom: 1.5rem;">
+                            <div class="code-header">
+                                <span class="code-lang">YAML</span>
+                                <span class="code-filename" style="float: right;">asc.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>ascCpcSource1: &amp;ascCpcSource1
+  name: autoclave1
+  enabled: !!bool true
+  scan_interval: !!int 2500
+  connector: AscCPC
+  address: 192.168.111.12
+  port: !!int 9999
+  bypass_ping: !!bool true
+  items:
+    - name: Availability   
+      script: |
+        local n = cache('./$SYSTEM/IsConnected', nil);
+        return n and 'Available' or 'Unavailable';
+      sink:
+        mtconnect: Device[Name=autoclave1]/Availability[Category=Event]
+    - name: Temperature   
+      address: .Autoclave.Inputs.AIRTC\Value
+      sink:
+        mtconnect: Device[Name=autoclave1]/Controller/Path/Temperature[Category=Sample]
+    - name: Pressure   
+      address: .Autoclave.Inputs.PRESS\Value
+      sink:
+        mtconnect: Device[Name=autoclave1]/Controller/Path/Pressure[Category=Sample]
+    - name: PumpHours
+      address: .Autoclave.Scripts.MotorHours.CoolPumpAOn\Value
+      sink:
+        mtconnect: Device[Name=autoclave1]/Controller/Path/Hours[Category=Sample]
+    - name: UserOperator
+      address: .Autoclave.Variables.OperatorName\Value
+    - name: Program
+      address: .Autoclave.RecipeProcessor.Recipe.RecipeData\Description
+    - name: ControlPowerConditionTriggered
+      address: .Autoclave.Alarms.ControlPower\Condition
+      script: |
+        set('cptrig', result);
+        return nil;
+    - name: ControlPowerAlarmActive
+      address: .Autoclave.Alarms.ControlPower\AlarmActive
+      script: |
+        set('cpalm', result);
+        return nil;
+    - name: ControlPowerCondition
+      address: ~
+      script: |
+        local cptrig = cache('cptrig', false);
+        local cpalm = cache('cpalm', false);
+        return cpalm and 'Fault' or (cptrig and 'Warning' or 'Normal');</pre>
+                            </div>
+                        </div>
                         
                         <h3>Example 1</h3>
                         <pre class="mermaid">
