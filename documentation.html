@@ -3,248 +3,606 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="DIME Technical Documentation - Complete guide to Data In Motion Enterprise platform, connectors, configuration, and deployment.">
-    <title>Documentation - DIME Industrial Intelligence</title>
+    <meta name="description" content="DIME Connector Documentation - Complete reference for all 40+ industrial and enterprise connectors">
+    <title>Connectors - DIME Documentation</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="icon" type="image/png" href="assets/images/dime_logo_graphic_real_white.png">
-    <link rel="apple-touch-icon" href="assets/images/dime_logo_graphic_real_white.png">
+    <link rel="icon" type="image/png" href="assets/images/dime_logo_graphic_real_trans.png">
+    <link rel="apple-touch-icon" href="assets/images/dime_logo_graphic_real_trans.png">
     <style>
-        /* Documentation-specific styles */
-        .documentation-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+        /* Documentation Theme */
+        :root {
+            --doc-bg: #0a0a0a;
+            --doc-surface: #1a1a1a;
+            --doc-surface-light: #252525;
+            --doc-border: #333;
+            --doc-text: #e0e0e0;
+            --doc-text-muted: #999;
+            --doc-accent: #0ea5e9;
+            --doc-accent-hover: #38bdf8;
+            --doc-success: #10b981;
+            --doc-warning: #f59e0b;
+            --doc-error: #ef4444;
+            --doc-info: #3b82f6;
+            --doc-purple: #8b5cf6;
+            --doc-pink: #ec4899;
         }
-        
-        .doc-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+
+        body {
+            background: var(--doc-bg);
+            color: var(--doc-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Override navbar for documentation */
+        .navbar {
+            background: var(--doc-surface);
+            border-bottom: 1px solid var(--doc-border);
+        }
+
+        /* Documentation Layout */
+        .doc-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: calc(100vh - 70px);
+            position: relative;
+        }
+
+        /* Sidebar */
+        .doc-sidebar {
+            background: var(--doc-surface);
+            border-right: 1px solid var(--doc-border);
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--doc-border) transparent;
+        }
+
+        .doc-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .doc-sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .doc-sidebar::-webkit-scrollbar-thumb {
+            background: var(--doc-border);
+            border-radius: 3px;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--doc-border);
+        }
+
+        .sidebar-header h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.25rem;
+            color: var(--doc-accent);
+        }
+
+        /* Search Box */
+        .connector-search {
+            position: relative;
+        }
+
+        .connector-search input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: var(--doc-surface-light);
+            border: 1px solid var(--doc-border);
             border-radius: 8px;
+            color: var(--doc-text);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .connector-search input:focus {
+            outline: none;
+            border-color: var(--doc-accent);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .connector-search::before {
+            content: "🔍";
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+        }
+
+        /* Category Filters */
+        .category-filters {
+            padding: 1.5rem;
+        }
+
+        .category-filter {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            margin: 0.25rem 0;
+            background: var(--doc-surface-light);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .category-filter:hover {
+            border-color: var(--doc-border);
+        }
+
+        .category-filter.active {
+            background: var(--doc-accent);
+            color: white;
+        }
+
+        .category-filter .icon {
+            margin-right: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .category-filter .count {
+            margin-left: auto;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+
+        /* Connector List */
+        .connector-list {
+            padding: 0 1rem 1rem;
+        }
+
+        .connector-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            background: var(--doc-surface-light);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            text-decoration: none;
+            color: var(--doc-text);
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .connector-item:hover {
+            background: var(--doc-surface);
+            border-color: var(--doc-accent);
+            transform: translateX(4px);
+        }
+
+        .connector-item.active {
+            background: var(--doc-accent);
             color: white;
         }
         
-        .doc-header img {
-            max-width: 400px;
-            margin-bottom: 2rem;
+        .connector-item.active .connector-type-indicator {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
         }
         
-        .version-box {
-            border: 2px solid #0ea5e9;
-            padding: 1rem 2rem;
-            display: inline-block;
-            margin-top: 1rem;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
+        .connector-type-indicator {
+            margin-left: auto;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            background: var(--doc-surface);
+            border-radius: 12px;
+            color: var(--doc-text-muted);
+            text-transform: capitalize;
         }
-        
-        .toc-section {
-            background: #f8f9fa;
-            padding: 2rem;
-            border-radius: 8px;
+
+        /* Main Content */
+        .doc-content {
+            padding: 3rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .doc-hero {
+            text-align: center;
+            padding: 4rem 0;
+            border-bottom: 1px solid var(--doc-border);
             margin-bottom: 3rem;
         }
-        
-        .toc-section h2 {
-            color: #1a1a2e;
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
+
+        .doc-hero h1 {
+            font-size: 3rem;
+            margin: 0 0 1rem 0;
+            background: linear-gradient(135deg, var(--doc-accent) 0%, var(--doc-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        
-        .toc-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .toc-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 4px;
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s ease;
-        }
-        
-        .toc-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-color: #0ea5e9;
-        }
-        
-        .toc-card h3 {
-            color: #0ea5e9;
-            margin-bottom: 0.5rem;
-            font-size: 1.2rem;
-        }
-        
-        .toc-card ul {
-            list-style: none;
-            padding: 0;
+
+        .doc-hero p {
+            font-size: 1.25rem;
+            color: var(--doc-text-muted);
             margin: 0;
         }
-        
-        .toc-card li {
-            padding: 0.25rem 0;
-        }
-        
-        .toc-card a {
-            color: #6b7280;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-        
-        .toc-card a:hover {
-            color: #0ea5e9;
-        }
-        
-        .doc-section {
+
+        /* Connector Grid */
+        .connector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 4rem;
         }
-        
-        .doc-section h2 {
-            color: #1a1a2e;
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #0ea5e9;
-        }
-        
-        .doc-section h3 {
-            color: #16213e;
-            font-size: 1.5rem;
-            margin: 2rem 0 1rem;
-        }
-        
-        .doc-section h4 {
-            color: #1e3a8a;
-            font-size: 1.2rem;
-            margin: 1.5rem 0 0.75rem;
-        }
-        
-        .architecture-diagram,
-        .code-block {
-            background: #1a1a2e;
-            color: #e5e7eb;
+
+        .connector-card {
+            background: var(--doc-surface);
+            border: 1px solid var(--doc-border);
+            border-radius: 12px;
             padding: 1.5rem;
-            border-radius: 4px;
-            margin: 1.5rem 0;
-            overflow-x: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .code-yaml {
-            background: #282c34;
-            color: #abb2bf;
+
+        .connector-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--doc-accent) 0%, var(--doc-purple) 100%);
+            transform: translateY(-100%);
+            transition: transform 0.3s;
+        }
+
+        .connector-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            border-color: var(--doc-accent);
+        }
+
+        .connector-card:hover::before {
+            transform: translateY(0);
+        }
+
+        .connector-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .connector-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .connector-card h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .connector-card-type {
+            font-size: 0.75rem;
+            color: var(--doc-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .connector-card-description {
+            color: var(--doc-text-muted);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        /* Connector Detail View */
+        .connector-detail {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .connector-detail.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .connector-detail-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--doc-border);
+        }
+
+        .connector-detail-icon {
+            font-size: 3rem;
+            margin-right: 1.5rem;
+        }
+
+        .connector-detail-title h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+        }
+
+        .connector-detail-title p {
+            margin: 0;
+            color: var(--doc-text-muted);
+        }
+
+        .connector-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            background: var(--doc-surface-light);
+            border: 1px solid var(--doc-border);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .badge.source {
+            border-color: var(--doc-success);
+            color: var(--doc-success);
+        }
+
+        .badge.sink {
+            border-color: var(--doc-info);
+            color: var(--doc-info);
+        }
+
+        /* Parameter Table */
+        .parameter-section {
+            margin: 2rem 0;
+        }
+
+        .parameter-section h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .parameter-table {
+            width: 100%;
+            background: var(--doc-surface);
+            border: 1px solid var(--doc-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .parameter-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .parameter-table th {
+            background: var(--doc-surface-light);
             padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid var(--doc-border);
+            color: var(--doc-accent);
+        }
+
+        .parameter-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--doc-border);
+        }
+
+        .parameter-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .parameter-table tr:hover {
+            background: rgba(14, 165, 233, 0.05);
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: var(--doc-accent);
+        }
+
+        .param-type {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            padding: 0.125rem 0.5rem;
+            background: var(--doc-surface-light);
             border-radius: 4px;
-            margin: 1rem 0;
+            color: var(--doc-warning);
+        }
+
+        .param-default {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: var(--doc-text-muted);
+        }
+
+        /* Code Examples */
+        .example-section {
+            margin: 2rem 0;
+        }
+
+        .example-section h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .code-example {
+            position: relative;
+            background: #0d1117;
+            border: 1px solid var(--doc-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: var(--doc-surface);
+            border-bottom: 1px solid var(--doc-border);
+        }
+
+        .code-language {
+            font-size: 0.875rem;
+            color: var(--doc-text-muted);
+            font-weight: 600;
+        }
+
+        .copy-button {
+            padding: 0.25rem 0.75rem;
+            background: var(--doc-surface-light);
+            border: 1px solid var(--doc-border);
+            border-radius: 4px;
+            color: var(--doc-text);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-button:hover {
+            background: var(--doc-accent);
+            border-color: var(--doc-accent);
+            color: white;
+        }
+
+        .copy-button.copied {
+            background: var(--doc-success);
+            border-color: var(--doc-success);
+            color: white;
+        }
+
+        .code-content {
+            padding: 1.5rem;
             overflow-x: auto;
             font-family: 'Courier New', monospace;
             font-size: 0.875rem;
+            line-height: 1.6;
         }
+
+        /* YAML Syntax Highlighting */
+        .yaml-key { color: #79c0ff; font-weight: 600; }
+        .yaml-value { color: #a5d6ff; }
+        .yaml-string { color: #a5d6ff; }
+        .yaml-number { color: #79c0ff; }
+        .yaml-boolean { color: #ff7b72; }
+        .yaml-type { color: #f59e0b; }
+        .yaml-comment { color: #8b949e; font-style: italic; }
         
-        .connector-card {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 4px;
-            margin: 1rem 0;
-            border-left: 4px solid #0ea5e9;
-        }
-        
-        .connector-card h4 {
-            margin-top: 0;
-            color: #0ea5e9;
-        }
-        
-        .performance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-        
-        .performance-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            padding: 1.5rem;
-            border-radius: 4px;
-            text-align: center;
-        }
-        
-        .performance-card h4 {
-            color: #0ea5e9;
-            margin-bottom: 0.5rem;
-        }
-        
-        .performance-card .metric {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #1a1a2e;
-        }
-        
-        .alert-box {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            padding: 1rem;
-            border-radius: 4px;
-            margin: 1rem 0;
-        }
-        
-        .alert-box strong {
-            color: #d97706;
-        }
-        
-        .back-to-top {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: #0ea5e9;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Style the button */
+        .btn-secondary {
+            background: var(--doc-surface-light);
+            color: var(--doc-text);
+            border: 1px solid var(--doc-border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
             text-decoration: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+            display: inline-block;
         }
         
-        .back-to-top.visible {
-            opacity: 1;
+        .btn-secondary:hover {
+            background: var(--doc-accent);
+            border-color: var(--doc-accent);
+            color: white;
+            transform: translateY(-1px);
         }
-        
-        .back-to-top:hover {
-            background: #0284c7;
-            transform: translateY(-2px);
-        }
-        
-        /* Syntax highlighting */
-        .yaml-key { color: #f92672; }
-        .yaml-value { color: #a6e22e; }
-        .yaml-comment { color: #75715e; }
-        .yaml-string { color: #e6db74; }
-        .yaml-number { color: #ae81ff; }
-        .yaml-bool { color: #ae81ff; }
-        
-        /* Mobile responsive */
-        @media (max-width: 768px) {
-            .documentation-content {
-                padding: 1rem;
-            }
-            
-            .doc-header img {
-                max-width: 250px;
-            }
-            
-            .toc-grid {
+
+        /* Mobile Responsive */
+        @media (max-width: 1024px) {
+            .doc-container {
                 grid-template-columns: 1fr;
             }
+
+            .doc-sidebar {
+                display: none;
+                position: fixed;
+                left: 0;
+                top: 70px;
+                width: 280px;
+                height: calc(100vh - 70px);
+                z-index: 1000;
+                box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+            }
+
+            .doc-sidebar.mobile-open {
+                display: block;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                width: 56px;
+                height: 56px;
+                background: var(--doc-accent);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                color: white;
+                box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+                cursor: pointer;
+                z-index: 999;
+            }
+
+            .doc-content {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .mobile-menu-toggle {
+                display: none;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(14, 165, 233, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--doc-accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -255,7 +613,7 @@
             <div class="container">
                 <div class="nav-brand">
                     <a href="index.html">
-                        <img src="assets/images/dime_logo_graphic_real_white.png" alt="DIME Logo" class="nav-logo">
+                        <img src="assets/images/dime_logo_graphic_real_trans.png" alt="DIME Logo" class="nav-logo">
                     </a>
                 </div>
                 <ul class="nav-menu">
@@ -277,134 +635,100 @@
         </nav>
     </header>
 
-    <!-- Documentation Content -->
-    <main class="documentation-content">
-        <!-- Header Section -->
-        <div class="doc-header">
-            <img src="assets/images/dime_logo_graphic_real_white.png" alt="DIME Logo">
-            <h1>DIME Technical Documentation</h1>
-            <p>Complete Industrial DataOps Platform Documentation</p>
-            <div class="version-box">Version 6.6.6</div>
-        </div>
-
-        <!-- Table of Contents -->
-        <section class="toc-section">
-            <h2>Table of Contents</h2>
-            <div class="toc-grid">
-                <div class="toc-card">
-                    <h3>1. Platform Overview</h3>
-                    <ul>
-                        <li><a href="#what-is-dime">1.1 What is DIME?</a></li>
-                        <li><a href="#architecture">1.2 Architecture & Core Components</a></li>
-                        <li><a href="#features">1.3 Key Features & Capabilities</a></li>
-                        <li><a href="#performance">1.4 Performance Specifications</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>2. Getting Started</h3>
-                    <ul>
-                        <li><a href="#installation">2.1 Installation Guide</a></li>
-                        <li><a href="#quickstart">2.2 Quick Start Tutorial</a></li>
-                        <li><a href="#basic-config">2.3 Basic Configuration</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>3. Configuration Reference</h3>
-                    <ul>
-                        <li><a href="#yaml-structure">3.1 YAML Configuration Structure</a></li>
-                        <li><a href="#app-config">3.2 App Configuration</a></li>
-                        <li><a href="#source-connectors">3.3 Source Connectors</a></li>
-                        <li><a href="#sink-connectors">3.4 Sink Connectors</a></li>
-                        <li><a href="#items-config">3.5 Items Configuration</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>4. Connector Catalog</h3>
-                    <ul>
-                        <li><a href="#industrial-protocols">4.1 Industrial Protocols</a></li>
-                        <li><a href="#enterprise-systems">4.2 Enterprise Systems</a></li>
-                        <li><a href="#database-connectors">4.3 Database Connectors</a></li>
-                        <li><a href="#message-queue">4.4 Message Queue Connectors</a></li>
-                        <li><a href="#cloud-services">4.5 Cloud Services</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>5. Scripting & Transformations</h3>
-                    <ul>
-                        <li><a href="#lua-scripting">5.1 Lua Scripting</a></li>
-                        <li><a href="#python-support">5.2 Python Support</a></li>
-                        <li><a href="#template-engines">5.3 Template Engines</a></li>
-                        <li><a href="#script-functions">5.4 Script Functions Reference</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>6. Advanced Features</h3>
-                    <ul>
-                        <li><a href="#htm-engine">6.1 HTM Neuromorphic Engine</a></li>
-                        <li><a href="#ai-config">6.2 AI Configuration Generation</a></li>
-                        <li><a href="#digital-twin">6.3 Digital Twin Builder</a></li>
-                        <li><a href="#analytics">6.4 Analytics Workbench</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>7. Monitoring & Management</h3>
-                    <ul>
-                        <li><a href="#status-server">7.1 Status Server</a></li>
-                        <li><a href="#web-interface">7.2 Web Interface</a></li>
-                        <li><a href="#performance-monitoring">7.3 Performance Monitoring</a></li>
-                        <li><a href="#config-management">7.4 Configuration Management</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>8. Deployment & Operations</h3>
-                    <ul>
-                        <li><a href="#production">8.1 Production Deployment</a></li>
-                        <li><a href="#security">8.2 Security Configuration</a></li>
-                        <li><a href="#high-availability">8.3 High Availability</a></li>
-                        <li><a href="#troubleshooting">8.4 Troubleshooting</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>9. Industry Solutions</h3>
-                    <ul>
-                        <li><a href="#automotive">9.1 Automotive Manufacturing</a></li>
-                        <li><a href="#aerospace">9.2 Aerospace & Defense</a></li>
-                        <li><a href="#pharmaceutical">9.3 Pharmaceutical</a></li>
-                        <li><a href="#food-beverage">9.4 Food & Beverage</a></li>
-                    </ul>
-                </div>
-                
-                <div class="toc-card">
-                    <h3>10. API & Integration</h3>
-                    <ul>
-                        <li><a href="#rest-api">10.1 REST API Reference</a></li>
-                        <li><a href="#websocket">10.2 WebSocket Interface</a></li>
-                        <li><a href="#sdk">10.3 SDK Documentation</a></li>
-                        <li><a href="#custom-connectors">10.4 Custom Connector Development</a></li>
-                    </ul>
+    <!-- Documentation Container -->
+    <div class="doc-container">
+        <!-- Sidebar -->
+        <aside class="doc-sidebar" id="docSidebar">
+            <div class="sidebar-header">
+                <h2>Connectors</h2>
+                <div class="connector-search">
+                    <input type="text" id="connectorSearch" placeholder="Search connectors...">
                 </div>
             </div>
-        </section>
+            
+            <div class="category-filters">
+                <div class="category-filter active" data-category="all">
+                    <span class="icon">📦</span>
+                    <span>All Connectors</span>
+                    <span class="count">47</span>
+                </div>
+                <div class="category-filter" data-category="common">
+                    <span class="icon">📋</span>
+                    <span>Common Properties</span>
+                    <span class="count">2</span>
+                </div>
+                <div class="category-filter" data-category="industrial">
+                    <span class="icon">🏭</span>
+                    <span>Industrial</span>
+                    <span class="count">13</span>
+                </div>
+                <div class="category-filter" data-category="database">
+                    <span class="icon">🗄️</span>
+                    <span>Database</span>
+                    <span class="count">5</span>
+                </div>
+                <div class="category-filter" data-category="messaging">
+                    <span class="icon">📨</span>
+                    <span>Messaging</span>
+                    <span class="count">5</span>
+                </div>
+                <div class="category-filter" data-category="analytics">
+                    <span class="icon">📊</span>
+                    <span>Analytics</span>
+                    <span class="count">6</span>
+                </div>
+                <div class="category-filter" data-category="robotics">
+                    <span class="icon">🤖</span>
+                    <span>Robotics</span>
+                    <span class="count">2</span>
+                </div>
+                <div class="category-filter" data-category="cnc">
+                    <span class="icon">⚙️</span>
+                    <span>CNC/Machine</span>
+                    <span class="count">5</span>
+                </div>
+                <div class="category-filter" data-category="web">
+                    <span class="icon">🌐</span>
+                    <span>Web/Network</span>
+                    <span class="count">8</span>
+                </div>
+                <div class="category-filter" data-category="utility">
+                    <span class="icon">🔨</span>
+                    <span>Utility</span>
+                    <span class="count">5</span>
+                </div>
+            </div>
+            
+            <div class="connector-list" id="connectorList">
+                <!-- Connectors will be populated here -->
+            </div>
+        </aside>
 
-        <!-- Placeholder for content sections -->
-        <div id="documentation-sections">
-            <!-- Content will be added here -->
-        </div>
-    </main>
+        <!-- Main Content -->
+        <main class="doc-content">
+            <!-- Hero Section -->
+            <div class="doc-hero" id="docHero">
+                <h1>DIME Connector Reference</h1>
+                <p>Complete documentation for all 40+ industrial and enterprise connectors</p>
+            </div>
 
-    <!-- Back to Top Button -->
-    <a href="#top" class="back-to-top" id="backToTop">↑</a>
+            <!-- Connector Grid View -->
+            <div id="connectorGrid" class="connector-grid">
+                <!-- Connector cards will be populated here -->
+            </div>
+
+            <!-- Connector Detail View -->
+            <div id="connectorDetail" class="connector-detail">
+                <!-- Connector details will be populated here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
 
     <!-- Footer -->
-    <footer>
+    <footer style="background: var(--doc-surface); border-top: 1px solid var(--doc-border);">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
@@ -430,31 +754,250 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="js/connectors-data.js"></script>
     <script>
-        // Back to top button functionality
-        const backToTopButton = document.getElementById('backToTop');
+        // Connector data is loaded from connectors-data.js
         
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 300) {
-                backToTopButton.classList.add('visible');
-            } else {
-                backToTopButton.classList.remove('visible');
-            }
+        // Initialize documentation
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDocumentation();
         });
         
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+        function initializeDocumentation() {
+            // Mobile menu toggle
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const docSidebar = document.getElementById('docSidebar');
+            
+            mobileMenuToggle.addEventListener('click', function() {
+                docSidebar.classList.toggle('mobile-open');
             });
-        });
+            
+            // Search functionality
+            const searchInput = document.getElementById('connectorSearch');
+            searchInput.addEventListener('input', function(e) {
+                filterConnectors(e.target.value);
+            });
+            
+            // Category filters
+            const categoryFilters = document.querySelectorAll('.category-filter');
+            categoryFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    categoryFilters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    filterByCategory(this.dataset.category);
+                });
+            });
+            
+            // Initialize connectors
+            populateConnectorList();
+            populateConnectorGrid();
+            
+            // Load initial content
+            showConnectorGrid();
+        }
+        
+        function populateConnectorList() {
+            const connectorList = document.getElementById('connectorList');
+            connectorList.innerHTML = '';
+            
+            connectors.forEach(connector => {
+                const item = document.createElement('a');
+                item.href = '#';
+                item.className = 'connector-item';
+                item.dataset.connectorId = connector.id;
+                item.dataset.category = connector.category;
+                
+                // Create the content with type indicator
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = connector.name;
+                
+                const typeSpan = document.createElement('span');
+                typeSpan.className = 'connector-type-indicator';
+                typeSpan.textContent = connector.type === 'source' ? 'Source' : 'Sink';
+                
+                item.appendChild(nameSpan);
+                item.appendChild(typeSpan);
+                
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showConnectorDetail(connector.id);
+                    // Update active state
+                    document.querySelectorAll('.connector-item').forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+                connectorList.appendChild(item);
+            });
+        }
+        
+        function populateConnectorGrid() {
+            const connectorGrid = document.getElementById('connectorGrid');
+            connectorGrid.innerHTML = '';
+            
+            connectors.forEach(connector => {
+                const card = document.createElement('div');
+                card.className = 'connector-card';
+                card.dataset.connectorId = connector.id;
+                card.dataset.category = connector.category;
+                card.innerHTML = `
+                    <div class="connector-card-header">
+                        <div class="connector-icon">${connector.icon}</div>
+                        <div>
+                            <h3>${connector.name}</h3>
+                            <div class="connector-card-type">${connector.type}</div>
+                        </div>
+                    </div>
+                    <div class="connector-card-description">${connector.description}</div>
+                `;
+                card.addEventListener('click', function() {
+                    showConnectorDetail(connector.id);
+                });
+                connectorGrid.appendChild(card);
+            });
+        }
+        
+        function filterConnectors(searchTerm) {
+            const term = searchTerm.toLowerCase();
+            
+            // Filter sidebar list
+            document.querySelectorAll('.connector-item').forEach(item => {
+                const matches = item.textContent.toLowerCase().includes(term);
+                item.style.display = matches ? 'block' : 'none';
+            });
+            
+            // Filter grid cards
+            document.querySelectorAll('.connector-card').forEach(card => {
+                const connector = connectors.find(c => c.id === card.dataset.connectorId);
+                const matches = connector.name.toLowerCase().includes(term) || 
+                               connector.description.toLowerCase().includes(term);
+                card.style.display = matches ? 'block' : 'none';
+            });
+        }
+        
+        function filterByCategory(category) {
+            // Filter sidebar list
+            document.querySelectorAll('.connector-item').forEach(item => {
+                const matches = category === 'all' || item.dataset.category === category;
+                item.style.display = matches ? 'block' : 'none';
+            });
+            
+            // Filter grid cards
+            document.querySelectorAll('.connector-card').forEach(card => {
+                const matches = category === 'all' || card.dataset.category === category;
+                card.style.display = matches ? 'block' : 'none';
+            });
+        }
+        
+        function showConnectorGrid() {
+            document.getElementById('connectorGrid').style.display = 'grid';
+            document.getElementById('connectorDetail').classList.remove('active');
+            document.getElementById('docHero').style.display = 'block';
+        }
+        
+        function showConnectorDetail(connectorId) {
+            const connector = connectors.find(c => c.id === connectorId);
+            if (!connector) return;
+            
+            document.getElementById('connectorGrid').style.display = 'none';
+            document.getElementById('docHero').style.display = 'none';
+            
+            const detailView = document.getElementById('connectorDetail');
+            detailView.innerHTML = `
+                <div class="connector-detail-header">
+                    <div class="connector-detail-icon">${connector.icon}</div>
+                    <div class="connector-detail-title">
+                        <h2>${connector.name}</h2>
+                        <p>${connector.description}</p>
+                        <div class="connector-badges">
+                            <span class="badge ${connector.type}">${connector.type}</span>
+                            <span class="badge">${getCategoryName(connector.category)}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="parameter-section">
+                    <h3>📋 Parameters</h3>
+                    <div class="parameter-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Default</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${connector.parameters.map(param => `
+                                    <tr>
+                                        <td><span class="param-name">${param.name}</span></td>
+                                        <td><span class="param-type">${param.type}</span></td>
+                                        <td><span class="param-default">${param.default}</span></td>
+                                        <td>${param.description}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="example-section">
+                    <h3>💻 Example Configuration</h3>
+                    <div class="code-example">
+                        <div class="code-header">
+                            <span class="code-language">YAML</span>
+                            <button class="copy-button" onclick="copyToClipboard(this, \`${connector.example.replace(/`/g, '\\`')}\`)">Copy</button>
+                        </div>
+                        <div class="code-content">
+                            <pre>${highlightYAML(connector.example)}</pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 3rem;">
+                    <button class="btn btn-secondary" onclick="showConnectorGrid()">← Back to Connectors</button>
+                </div>
+            `;
+            
+            detailView.classList.add('active');
+            window.scrollTo(0, 0);
+        }
+        
+        function getCategoryName(category) {
+            const names = {
+                common: 'Common Properties',
+                industrial: 'Industrial Protocol',
+                database: 'Database',
+                messaging: 'Message Queue',
+                analytics: 'Analytics',
+                robotics: 'Robotics',
+                cnc: 'CNC/Machine',
+                web: 'Web/Network',
+                utility: 'Utility'
+            };
+            return names[category] || category;
+        }
+        
+        function highlightYAML(yaml) {
+            return yaml
+                .replace(/^(\s*)(- )?(\w+):/gm, '$1$2<span class="yaml-key">$3</span>:')
+                .replace(/: (.+)$/gm, ': <span class="yaml-value">$1</span>')
+                .replace(/!!(\w+)/g, '<span class="yaml-type">!!$1</span>')
+                .replace(/(true|false)/gi, '<span class="yaml-boolean">$1</span>')
+                .replace(/(\d+)/g, '<span class="yaml-number">$1</span>')
+                .replace(/#.*/g, '<span class="yaml-comment">$&</span>');
+        }
+        
+        // Copy to clipboard functionality
+        function copyToClipboard(button, text) {
+            navigator.clipboard.writeText(text).then(function() {
+                button.textContent = '✓ Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
     </script>
 </body>
 </html>
