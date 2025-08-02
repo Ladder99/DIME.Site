@@ -483,6 +483,9 @@ a.component-link:hover h3 {
 .download-icon {
     font-size: 3rem;
     margin-bottom: var(--space-md);
+    color: var(--primary);
+    font-weight: 300;
+    display: inline-block;
 }
 
 .download-card h3 {
