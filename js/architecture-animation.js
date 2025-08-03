@@ -32,7 +32,7 @@
         
         // Adjust camera distance to show triangle at 2/3 height
         // The triangle group is about 4.5 units tall after compression, so zoom accordingly
-        const cameraDistance = window.innerWidth < 768 ? 12 : 10; // Closer to make triangle larger
+        const cameraDistance = window.innerWidth < 768 ? 18 : 16; // Zoom out more to show all triangles
         camera.position.set(0, 0, cameraDistance);
         camera.lookAt(0, 0, 0);
         
@@ -258,6 +258,14 @@
         let imageReplaced = false;
         const isMobile = window.innerWidth < 768;
         
+        // Performance optimization for mobile
+        if (isMobile) {
+            // Reduce triangle complexity on mobile
+            triangles.forEach(tri => {
+                tri.children[0].material.transparent = false; // Disable transparency calculations when not animating
+            });
+        }
+        
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
@@ -267,7 +275,7 @@
             // Drop animation for triangles
             triangles.forEach((tri, index) => {
                 if (time > tri.userData.delay && !tri.userData.dropped) {
-                    tri.userData.dropTime += isMobile ? 0.06 : 0.03;  // Faster on mobile
+                    tri.userData.dropTime += isMobile ? 0.08 : 0.03;  // Even faster on mobile
                     const t = Math.min(tri.userData.dropTime, 1);
                     
                     // Easing function for smooth drop (bounce effect)
@@ -289,7 +297,10 @@
                         tri.rotation.z = 0;
                     }
                     
-                    // Fade in
+                    // Fade in - enable transparency only when needed
+                    if (!tri.children[0].material.transparent && isMobile) {
+                        tri.children[0].material.transparent = true;
+                    }
                     tri.children[0].material.opacity = ease * 0.7;
                     
                     if (t >= 1) {
@@ -306,8 +317,8 @@
                     }
                 }
                 
-                // After dropping, add subtle animations
-                if (tri.userData.dropped) {
+                // After dropping, add subtle animations (reduced on mobile)
+                if (tri.userData.dropped && !isMobile) {
                     // Gentle pulsing
                     const scale = 1 + Math.sin(time * 2 + index * 0.3) * 0.02;
                     tri.scale.set(scale, scale, scale);
@@ -317,12 +328,15 @@
                     
                     // Opacity variation - shimmer effect
                     tri.children[0].material.opacity = 0.6 + Math.sin(time * 3 + index) * 0.2;
+                } else if (tri.userData.dropped && isMobile) {
+                    // Minimal animation on mobile for performance
+                    tri.children[0].material.opacity = 0.7;
                 }
             });
             
             // Animate columns coming together after all triangles drop
             if (columnsClosing) {
-                const closeSpeed = isMobile ? 1.0 : 0.5;  // Faster on mobile
+                const closeSpeed = isMobile ? 1.5 : 0.5;  // Much faster on mobile
                 const closeTime = (time - columnsClosingStartTime) * closeSpeed;
                 const closeEase = Math.min(closeTime, 1);
                 const smoothEase = 1 - Math.pow(1 - closeEase, 3);
@@ -334,13 +348,13 @@
                     tri.position.y = tri.userData.targetY * (1 - smoothEase * 0.95);
                 });
                 
-                // Mark animation as complete after compression finishes + 0.5 seconds
+                // Mark animation as complete after compression finishes + 0.5 seconds (or 0.2s on mobile)
                 if (closeEase >= 1 && !animationComplete) {
                     setTimeout(() => {
                         animationComplete = true;
                         fadeOutStarted = true;
                         fadeOutStartTime = time;
-                    }, 500);
+                    }, isMobile ? 200 : 500);
                 }
             }
             
@@ -360,8 +374,8 @@
                 // Fade out outline
                 outline.material.opacity = outline.material.opacity * opacity;
                 
-                // Start image replacement at 0.5 seconds (halfway through fade)
-                if (fadeEase >= 0.5 && !imageReplaced) {
+                // Start image replacement at 0.2 seconds (much earlier in the fade)
+                if (fadeEase >= 0.2 && !imageReplaced) {
                     imageReplaced = true;
                     replaceCanvasWithImage();
                 }
@@ -399,7 +413,7 @@
                 img.style.height = '100%';
                 img.style.display = 'block';
                 img.style.opacity = '0';
-                img.style.transition = 'opacity 0.5s ease-in-out';
+                img.style.transition = 'opacity 0.8s ease-in-out';
                 img.style.objectFit = 'contain';
                 img.style.backgroundColor = '#ffffff';
                 img.style.position = 'absolute';
@@ -420,7 +434,7 @@
                 // Fade in image immediately (will overlap with canvas fade out)
                 setTimeout(() => {
                     img.style.opacity = '1';
-                }, 50);
+                }, 10);
                 
                 // After transition completes, switch to natural image sizing
                 setTimeout(() => {
@@ -453,7 +467,7 @@
             camera.updateProjectionMatrix();
             
             // Adjust camera distance for mobile
-            const cameraDistance = window.innerWidth < 768 ? 12 : 10;
+            const cameraDistance = window.innerWidth < 768 ? 18 : 16;
             camera.position.z = cameraDistance;
             
             // Update renderer
