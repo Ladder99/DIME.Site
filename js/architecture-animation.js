@@ -12,15 +12,103 @@
             return;
         }
         
-        // Skip animation on mobile and show image directly
+        // Skip animation on mobile and show swipeable image gallery
         if (window.innerWidth < 768) {
             canvas.style.display = 'none';
+            
+            // Create wrapper for gallery
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.width = '100%';
+            wrapper.style.height = 'auto';
+            wrapper.style.minHeight = '300px';
+            
+            // Create image element
             const img = document.createElement('img');
             img.src = 'assets/images/workbench_1.png';
             img.style.width = '100%';
             img.style.height = 'auto';
             img.style.display = 'block';
-            canvas.parentElement.insertBefore(img, canvas);
+            
+            wrapper.appendChild(img);
+            canvas.parentElement.insertBefore(wrapper, canvas);
+            
+            // Setup simple swipeable gallery (no hotspots on mobile)
+            const images = [
+                'assets/images/workbench_1.png',
+                'assets/images/htm_2.png'
+            ];
+            
+            let currentIndex = 0;
+            
+            // Add touch/swipe support
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            wrapper.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, false);
+            
+            wrapper.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, false);
+            
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // Swiped left - next image
+                        currentIndex = (currentIndex + 1) % images.length;
+                    } else {
+                        // Swiped right - previous image
+                        currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    }
+                    img.src = images[currentIndex];
+                }
+            }
+            
+            // Add indicator dots
+            const indicators = document.createElement('div');
+            indicators.style.position = 'absolute';
+            indicators.style.bottom = '20px';
+            indicators.style.left = '50%';
+            indicators.style.transform = 'translateX(-50%)';
+            indicators.style.zIndex = '10';
+            indicators.style.display = 'flex';
+            indicators.style.gap = '10px';
+            
+            images.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.style.width = '10px';
+                dot.style.height = '10px';
+                dot.style.borderRadius = '50%';
+                dot.style.border = '2px solid white';
+                dot.style.background = index === 0 ? 'white' : 'transparent';
+                dot.style.cursor = 'pointer';
+                dot.style.transition = 'background 0.3s';
+                indicators.appendChild(dot);
+            });
+            
+            wrapper.appendChild(indicators);
+            
+            // Update indicators when image changes
+            function updateIndicators() {
+                const dots = indicators.querySelectorAll('div');
+                dots.forEach((dot, index) => {
+                    dot.style.background = index === currentIndex ? 'white' : 'transparent';
+                });
+            }
+            
+            // Update indicators after swipe
+            const originalHandleSwipe = handleSwipe;
+            handleSwipe = function() {
+                originalHandleSwipe();
+                updateIndicators();
+            };
+            
             return;
         }
         
