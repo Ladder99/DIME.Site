@@ -78,6 +78,13 @@
         const triangles = [];
         const connections = [];
         const particles = [];
+        const particleSystem = new THREE.Group();
+        scene.add(particleSystem);
+        
+        // Add point light for dramatic effect
+        const pointLight = new THREE.PointLight(0xffffff, 0.5, 100);
+        pointLight.position.set(0, 0, 10);
+        scene.add(pointLight);
         
         // Create outline of big triangle pointing right
         const outlineGeometry = new THREE.BufferGeometry();
@@ -153,10 +160,10 @@
                 column: -1  // Which column this triangle belongs to
             };
             
-            // Start position high above with some scatter
+            // Start position to the right (will appear from right after rotation)
             group.position.set(
-                (Math.random() - 0.5) * 8,
-                10 + Math.random() * 5,
+                (Math.random() - 0.5) * 2,
+                15 + Math.random() * 5,  // This becomes X after rotation
                 (Math.random() - 0.5) * 2
             );
             
@@ -267,6 +274,39 @@
         let fadeOutStarted = false;
         let imageReplaced = false;
         
+        // Function to create velocity particles (in world space, not rotated)
+        function createParticle(x, y, velocity, color, size = 0.02) {
+            const particleGeometry = new THREE.SphereGeometry(size, 6, 6);
+            const particleMaterial = new THREE.MeshBasicMaterial({
+                color: color,
+                transparent: true,
+                opacity: 1.0  // Full opacity
+            });
+            const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+            
+            // Apply rotation to position since particles are in world space
+            // Rotate -90 degrees to match mainGroup rotation
+            const rotatedX = y;  // y becomes x after -90 degree rotation
+            const rotatedY = -x; // x becomes -y after -90 degree rotation
+            particle.position.set(rotatedX, rotatedY, 0);
+            
+            // Also rotate velocity
+            const rotatedVelX = velocity.y;
+            const rotatedVelY = -velocity.x;
+            
+            particle.userData = {
+                velocity: {
+                    x: rotatedVelX,
+                    y: rotatedVelY,
+                    z: velocity.z
+                },
+                life: 1.0,
+                maxLife: 1.0
+            };
+            particles.push(particle);
+            particleSystem.add(particle);
+        }
+        
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
@@ -282,16 +322,48 @@
                     // Easing function for smooth drop (bounce effect)
                     const ease = 1 - Math.pow(1 - t, 3);
                     
+                    // Store previous position for trail
+                    const prevX = tri.position.x;
+                    const prevY = tri.position.y;
+                    const prevZ = tri.position.z;
+                    
                     // Interpolate position to exact tessellation position
                     tri.position.x = tri.position.x * (1 - ease * 0.08) + tri.userData.targetX * ease * 0.08;
                     tri.position.y = tri.position.y * (1 - ease * 0.08) + tri.userData.targetY * ease * 0.08;
                     tri.position.z = tri.position.z * (1 - ease * 0.08) + tri.userData.targetZ * ease * 0.08;
+                    
+                    // Emit trail particles as triangle moves
+                    if (t < 0.9 && Math.random() > 0.3) { // More particles for better trail
+                        const numTrailParticles = 2 + Math.floor(Math.random() * 2);
+                        for (let p = 0; p < numTrailParticles; p++) {
+                            // Velocity should follow the triangle's actual movement direction
+                            const velocity = {
+                                x: (prevX - tri.position.x) * 0.1 + (Math.random() - 0.5) * 0.01,
+                                y: (prevY - tri.position.y) * 0.1 + (Math.random() - 0.5) * 0.01,
+                                z: (prevZ - tri.position.z) * 0.1 + (Math.random() - 0.5) * 0.01
+                            };
+                            createParticle(
+                                prevX + (Math.random() - 0.5) * 0.1,
+                                prevY + (Math.random() - 0.5) * 0.1,
+                                velocity,
+                                tri.children[0].material.color.getHex()
+                            );
+                        }
+                    }
                     
                     // Reduce rotation as it falls to zero for clean tessellation
                     tri.rotation.z = tri.rotation.z * (1 - ease * 0.08);
                     
                     // Snap to exact position when close
                     if (t >= 0.95) {
+                        // Create shockwave effect - scale bounce
+                        if (!tri.userData.impactCreated) {
+                            tri.userData.impactCreated = true;
+                            tri.userData.impactTime = time;
+                            tri.userData.baseScale = 1;
+                            
+                        }
+                        
                         tri.position.x = tri.userData.targetX;
                         tri.position.y = tri.userData.targetY;
                         tri.position.z = tri.userData.targetZ;
@@ -317,15 +389,30 @@
                 
                 // After dropping, add subtle animations
                 if (tri.userData.dropped) {
-                    // Gentle pulsing
-                    const scale = 1 + Math.sin(time * 2 + index * 0.3) * 0.02;
+                    let scale = 1;
+                    
+                    // Impact shockwave animation
+                    if (tri.userData.impactTime) {
+                        const impactDelta = time - tri.userData.impactTime;
+                        if (impactDelta < 0.5) {
+                            // Bounce effect: scale up then down
+                            const bounce = Math.sin(impactDelta * Math.PI * 4) * Math.exp(-impactDelta * 8);
+                            scale = 1 + bounce * 0.3;
+                            
+                            // Flash effect
+                            const flash = Math.exp(-impactDelta * 10);
+                            tri.children[0].material.opacity = Math.min(1, 0.7 + flash * 0.3);
+                        } else {
+                            // Normal gentle pulsing after impact settles
+                            scale = 1 + Math.sin(time * 2 + index * 0.3) * 0.02;
+                            tri.children[0].material.opacity = 0.6 + Math.sin(time * 3 + index) * 0.2;
+                        }
+                    }
+                    
                     tri.scale.set(scale, scale, scale);
                     
                     // Subtle floating
                     tri.position.z = tri.userData.targetZ + Math.sin(time + index * 0.5) * 0.1;
-                    
-                    // Opacity variation - shimmer effect
-                    tri.children[0].material.opacity = 0.6 + Math.sin(time * 3 + index) * 0.2;
                 }
             });
             
@@ -338,9 +425,14 @@
                 
                 // Move all triangles closer together in both X and Y to close gaps
                 triangles.forEach((tri) => {
+                    // Calculate previous position for velocity
+                    const prevX = tri.position.x;
+                    const prevY = tri.position.y;
+                    
                     // Compress both X and Y to close all gaps - NUCLEAR COMPRESSION!
                     tri.position.x = tri.userData.targetX * (1 - smoothEase * 0.95);
                     tri.position.y = tri.userData.targetY * (1 - smoothEase * 0.95);
+                    
                 });
                 
                 // Mark animation as complete after compression finishes + 0.5 seconds
@@ -379,67 +471,126 @@
                 outline.material.opacity = 0.3 + Math.sin(time * 2) * 0.2;
             }
             
+            // Update particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                
+                // Update position based on velocity
+                particle.position.x += particle.userData.velocity.x;
+                particle.position.y += particle.userData.velocity.y;
+                particle.position.z += particle.userData.velocity.z;
+                
+                // Apply gravity and drag (less drag for data packets to travel further)
+                particle.userData.velocity.y -= 0.0002; // lighter gravity
+                particle.userData.velocity.x *= 0.995; // less drag for data packets
+                particle.userData.velocity.y *= 0.995;
+                particle.userData.velocity.z *= 0.995;
+                
+                // Fade out
+                particle.userData.life -= 0.015;  // Slower fade for better visibility
+                particle.material.opacity = particle.userData.life;
+                
+                // Remove dead particles
+                if (particle.userData.life <= 0) {
+                    particleSystem.remove(particle);
+                    particles.splice(i, 1);
+                    particle.geometry.dispose();
+                    particle.material.dispose();
+                }
+            }
+            
             // Render the scene
             renderer.render(scene, camera);
         }
         
-        // Function to replace canvas with image
+        // Function to replace canvas with image gallery
         function replaceCanvasWithImage() {
-            // Create a temporary image to calculate natural dimensions
-            const tempImg = new Image();
-            tempImg.src = 'assets/images/workbench_1.png';
+            // Use the same fixed height as the canvas (570px) to prevent jumping
+            const canvasHeight = 570;
             
-            tempImg.onload = function() {
-                // Use the same fixed height as the canvas (570px) to prevent jumping
-                const canvasHeight = 570;
+            // Create wrapper div with same height as canvas
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            wrapper.style.width = '100%';
+            wrapper.style.height = canvasHeight + 'px';
+            wrapper.style.backgroundColor = '#ffffff'; // White background on wrapper
+            
+            // Create image element
+            const img = document.createElement('img');
+            img.src = 'assets/images/workbench_1.png';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.display = 'block';
+            img.style.opacity = '0';
+            img.style.transition = 'opacity 0.8s ease-in-out';
+            img.style.objectFit = 'contain';
+            img.style.position = 'absolute';
+            img.style.top = '0';
+            img.style.left = '0';
+            img.style.zIndex = '1'; // Image behind canvas
+            
+            // Move canvas to absolute positioning too
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.zIndex = '2'; // Canvas on top
+            canvas.style.transition = 'opacity 0.8s ease-in-out'; // Add transition to canvas
+            
+            // Wrap canvas in the wrapper
+            canvas.parentElement.insertBefore(wrapper, canvas);
+            wrapper.appendChild(img); // Add image first (bottom layer)
+            wrapper.appendChild(canvas); // Add canvas second (top layer)
+            
+            // Setup gallery with multiple images (if gallery module available)
+            if (window.createImageGallery) {
+                // Define gallery images
+                const galleryImages = [
+                    {
+                        src: 'assets/images/workbench_1.png',
+                        hotspotsKey: 'workbench_1.png'
+                    },
+                    {
+                        src: 'assets/images/htm_2.png',
+                        hotspotsKey: 'htm_2.png'
+                    }
+                ];
                 
-                // Create wrapper div with same height as canvas
-                const wrapper = document.createElement('div');
-                wrapper.style.position = 'relative';
-                wrapper.style.width = '100%';
-                wrapper.style.height = canvasHeight + 'px';
-                wrapper.style.backgroundColor = '#ffffff'; // White background on wrapper
+                // Wait for image to load, then create gallery
+                const setupGallery = function() {
+                    window.createImageGallery(wrapper, galleryImages);
+                };
                 
-                // Create image element
-                const img = document.createElement('img');
-                img.src = 'assets/images/workbench_1.png';
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.display = 'block';
-                img.style.opacity = '0';
-                img.style.transition = 'opacity 0.8s ease-in-out';
-                img.style.objectFit = 'contain';
-                img.style.position = 'absolute';
-                img.style.top = '0';
-                img.style.left = '0';
-                img.style.zIndex = '1'; // Image behind canvas
+                if (img.complete) {
+                    setupGallery();
+                } else {
+                    img.onload = setupGallery;
+                }
+            } else if (window.addImageHotspots) {
+                // Fallback to single image with hotspots
+                const setupHotspots = function() {
+                    window.addImageHotspots(wrapper, img, 'workbench_1.png');
+                };
                 
-                // Move canvas to absolute positioning too
-                canvas.style.position = 'absolute';
-                canvas.style.top = '0';
-                canvas.style.left = '0';
-                canvas.style.zIndex = '2'; // Canvas on top
-                canvas.style.transition = 'opacity 0.8s ease-in-out'; // Add transition to canvas
-                
-                // Wrap canvas in the wrapper
-                canvas.parentElement.insertBefore(wrapper, canvas);
-                wrapper.appendChild(img); // Add image first (bottom layer)
-                wrapper.appendChild(canvas); // Add canvas second (top layer)
-                
-                // Fade in image immediately (will overlap with canvas fade out)
-                setTimeout(() => {
-                    img.style.opacity = '1';
-                    // Also fade out the canvas itself for true crossfade
-                    canvas.style.opacity = '0';
-                }, 10);
-                
-                // After transition completes, keep the fixed height
-                setTimeout(() => {
-                    canvas.style.display = 'none';
-                    // Keep the wrapper with fixed height to prevent jumping
-                    // The image stays inside the wrapper at the same height
-                }, 900); // Wait for full transition (0.8s + buffer)
-            };
+                if (img.complete) {
+                    setupHotspots();
+                } else {
+                    img.onload = setupHotspots;
+                }
+            }
+            
+            // Fade in image immediately (will overlap with canvas fade out)
+            setTimeout(() => {
+                img.style.opacity = '1';
+                // Also fade out the canvas itself for true crossfade
+                canvas.style.opacity = '0';
+            }, 10);
+            
+            // After transition completes, keep the fixed height
+            setTimeout(() => {
+                canvas.style.display = 'none';
+                // Keep the wrapper with fixed height to prevent jumping
+                // The image stays inside the wrapper at the same height
+            }, 900); // Wait for full transition (0.8s + buffer)
         }
         
         // Start animation
