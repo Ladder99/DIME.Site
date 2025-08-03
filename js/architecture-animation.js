@@ -39,10 +39,13 @@
         // Renderer setup
         const renderer = new THREE.WebGLRenderer({ 
             canvas: canvas,
-            antialias: true,
-            alpha: true
+            antialias: window.innerWidth > 768, // Disable antialiasing on mobile for better performance
+            alpha: true,
+            powerPreference: "high-performance"  // Request high performance GPU
         });
-        renderer.setPixelRatio(window.devicePixelRatio || 2);  // Use device pixel ratio for sharper rendering
+        // Limit pixel ratio on mobile for better performance
+        const pixelRatio = window.innerWidth < 768 ? Math.min(window.devicePixelRatio, 2) : window.devicePixelRatio;
+        renderer.setPixelRatio(pixelRatio);
         renderer.setSize(width, height);
         
         
@@ -178,7 +181,7 @@
             const x = (col - 4) * triSize / 2;  // Back to original spacing
             const y = -2 * triHeight;
             const pointsUp = (col % 2 === 0);
-            const delay = triangleIndex * 0.1 + Math.random() * 0.2;
+            const delay = triangleIndex * (window.innerWidth < 768 ? 0.05 : 0.1) + Math.random() * (window.innerWidth < 768 ? 0.1 : 0.2);
             const triangle = createTriangle(x, y, pointsUp, subsystemMap[triangleIndex], triangleIndex, delay);
             triangle.userData.column = 0;  // Row 0
             triangle.userData.columnShiftX = 0;  // No shift needed
@@ -192,7 +195,7 @@
             const x = (col - 3) * triSize / 2;  // Perfect tessellation spacing
             const y = -triHeight;
             const pointsUp = (col % 2 === 0);
-            const delay = triangleIndex * 0.1 + Math.random() * 0.2;
+            const delay = triangleIndex * (window.innerWidth < 768 ? 0.05 : 0.1) + Math.random() * (window.innerWidth < 768 ? 0.1 : 0.2);
             const triangle = createTriangle(x, y, pointsUp, subsystemMap[triangleIndex], triangleIndex, delay);
             triangle.rotation.z = Math.PI;  // Flip 180 degrees around Z axis
             triangle.userData.column = 1;  // Row 1
@@ -207,7 +210,7 @@
             const x = (col - 2) * triSize / 2;  // Back to original spacing
             const y = 0;
             const pointsUp = (col % 2 === 0);
-            const delay = triangleIndex * 0.1 + Math.random() * 0.2;
+            const delay = triangleIndex * (window.innerWidth < 768 ? 0.05 : 0.1) + Math.random() * (window.innerWidth < 768 ? 0.1 : 0.2);
             const triangle = createTriangle(x, y, pointsUp, subsystemMap[triangleIndex], triangleIndex, delay);
             triangle.userData.column = 2;  // Row 2
             triangle.userData.columnShiftX = 0;
@@ -221,7 +224,7 @@
             const x = (col - 1) * triSize / 2;  // Perfect tessellation spacing
             const y = triHeight;
             const pointsUp = (col % 2 === 0);
-            const delay = triangleIndex * 0.1 + Math.random() * 0.2;
+            const delay = triangleIndex * (window.innerWidth < 768 ? 0.05 : 0.1) + Math.random() * (window.innerWidth < 768 ? 0.1 : 0.2);
             const triangle = createTriangle(x, y, pointsUp, subsystemMap[triangleIndex], triangleIndex, delay);
             triangle.rotation.z = Math.PI;  // Flip 180 degrees around Z axis
             triangle.userData.column = 3;  // Row 3
@@ -253,6 +256,7 @@
         let fadeOutStartTime = 0;
         let fadeOutStarted = false;
         let imageReplaced = false;
+        const isMobile = window.innerWidth < 768;
         
         // Animation loop
         function animate() {
@@ -263,7 +267,7 @@
             // Drop animation for triangles
             triangles.forEach((tri, index) => {
                 if (time > tri.userData.delay && !tri.userData.dropped) {
-                    tri.userData.dropTime += 0.03;
+                    tri.userData.dropTime += isMobile ? 0.06 : 0.03;  // Faster on mobile
                     const t = Math.min(tri.userData.dropTime, 1);
                     
                     // Easing function for smooth drop (bounce effect)
@@ -318,7 +322,8 @@
             
             // Animate columns coming together after all triangles drop
             if (columnsClosing) {
-                const closeTime = (time - columnsClosingStartTime) * 0.5;
+                const closeSpeed = isMobile ? 1.0 : 0.5;  // Faster on mobile
+                const closeTime = (time - columnsClosingStartTime) * closeSpeed;
                 const closeEase = Math.min(closeTime, 1);
                 const smoothEase = 1 - Math.pow(1 - closeEase, 3);
                 
@@ -371,53 +376,64 @@
         
         // Function to replace canvas with image
         function replaceCanvasWithImage() {
-            // Create wrapper div to maintain space in document flow
-            const wrapper = document.createElement('div');
-            wrapper.style.position = 'relative';
-            wrapper.style.width = '100%';
-            wrapper.style.height = canvas.style.height;
+            // Create a temporary image to calculate natural dimensions
+            const tempImg = new Image();
+            tempImg.src = 'assets/images/workbench_1.png';
             
-            // Create image element
-            const img = document.createElement('img');
-            img.src = 'assets/images/workbench_1.png';
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.display = 'block';
-            img.style.opacity = '0';
-            img.style.transition = 'opacity 0.5s ease-in-out'; // 0.5s fade in to match overlap
-            img.style.objectFit = 'contain';
-            img.style.backgroundColor = '#ffffff';
-            img.style.position = 'absolute';
-            img.style.top = '0';
-            img.style.left = '0';
-            
-            // Move canvas to absolute positioning too
-            canvas.style.position = 'absolute';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            canvas.style.zIndex = '2';
-            
-            // Wrap canvas in the wrapper
-            canvas.parentElement.insertBefore(wrapper, canvas);
-            wrapper.appendChild(canvas);
-            wrapper.appendChild(img);
-            
-            // Fade in image immediately (will overlap with canvas fade out)
-            setTimeout(() => {
-                img.style.opacity = '1';
-            }, 50);
-            
-            // After transition completes, switch to natural image sizing
-            setTimeout(() => {
-                canvas.style.display = 'none';
-                // Remove wrapper and let image be naturally sized
-                img.style.position = 'static';
-                img.style.height = 'auto';
-                wrapper.style.height = 'auto';
-                // Or optionally replace wrapper with just the image
-                wrapper.parentElement.insertBefore(img, wrapper);
-                wrapper.remove();
-            }, 500);
+            tempImg.onload = function() {
+                // Calculate the height based on image aspect ratio
+                const aspectRatio = tempImg.height / tempImg.width;
+                const containerWidth = canvas.parentElement.clientWidth;
+                const naturalHeight = containerWidth * aspectRatio;
+                
+                // Create wrapper div with correct height
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'relative';
+                wrapper.style.width = '100%';
+                wrapper.style.height = naturalHeight + 'px';
+                
+                // Create image element
+                const img = document.createElement('img');
+                img.src = 'assets/images/workbench_1.png';
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.display = 'block';
+                img.style.opacity = '0';
+                img.style.transition = 'opacity 0.5s ease-in-out';
+                img.style.objectFit = 'contain';
+                img.style.backgroundColor = '#ffffff';
+                img.style.position = 'absolute';
+                img.style.top = '0';
+                img.style.left = '0';
+                
+                // Move canvas to absolute positioning too
+                canvas.style.position = 'absolute';
+                canvas.style.top = '0';
+                canvas.style.left = '0';
+                canvas.style.zIndex = '2';
+                
+                // Wrap canvas in the wrapper
+                canvas.parentElement.insertBefore(wrapper, canvas);
+                wrapper.appendChild(canvas);
+                wrapper.appendChild(img);
+                
+                // Fade in image immediately (will overlap with canvas fade out)
+                setTimeout(() => {
+                    img.style.opacity = '1';
+                }, 50);
+                
+                // After transition completes, switch to natural image sizing
+                setTimeout(() => {
+                    canvas.style.display = 'none';
+                    // Remove wrapper and let image be naturally sized
+                    img.style.position = 'static';
+                    img.style.height = 'auto';
+                    wrapper.style.height = 'auto';
+                    // Replace wrapper with just the image
+                    wrapper.parentElement.insertBefore(img, wrapper);
+                    wrapper.remove();
+                }, 500);
+            };
         }
         
         // Start animation
