@@ -650,6 +650,7 @@
             border: 1px solid var(--doc-border);
             border-radius: 8px;
             overflow: hidden;
+            margin-bottom: 2rem;
         }
 
         .code-header {
@@ -921,6 +922,37 @@
         .doc-section {
             margin-bottom: 3rem;
         }
+        
+        .success-message {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            font-size: 1.1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        
+        .checklist li {
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            background: var(--neutral-800);
+            border-radius: 0.375rem;
+            border-left: 3px solid var(--primary);
+            transition: all 0.2s ease;
+        }
+        
+        .checklist li:hover {
+            transform: translateX(5px);
+            background: var(--neutral-700);
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <style>
@@ -1015,10 +1047,6 @@
                     <a href="#" class="quick-link-item" data-doc="examples">
                         <span class="icon">💡</span>
                         <span>Examples</span>
-                    </a>
-                    <a href="#" class="quick-link-item" data-doc="api-reference">
-                        <span class="icon">📡</span>
-                        <span>API Reference</span>
                     </a>
                 </div>
             </div>
@@ -1447,9 +1475,6 @@
                 case 'examples':
                     content = generateExamplesDoc();
                     break;
-                case 'api-reference':
-                    content = generateApiReferenceDoc();
-                    break;
                 default:
                     content = '<p>Documentation page not found.</p>';
             }
@@ -1486,7 +1511,421 @@
                         </ul>
                         
                         <h2>Data Collection Layer</h2>
-                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
+                        
+                        <h3>🚀 Quick Start (5 Minutes)</h3>
+                        
+                        <h4>Step 1: Install DIME</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">BASH</span>
+                                <span class="filename">Windows</span>
+                            </div>
+                            <div class="code-content">
+                                <pre># Download from GitHub
+https://github.com/ladder99/DIME/releases
+DIME.exe --version</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">BASH</span>
+                                <span class="filename">Docker</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>docker pull ladder99/dime:latest
+docker run -it ladder99/dime --version</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Step 2: Create Your First Configuration</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">quickstart.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>app:
+  license: "AAAA-BBBB-CCCC-DDDD-EEEE-FFFF-GGGG-HHHH"
+  ring_buffer: !!int 4096
+  http_server_uri: "http://127.0.0.1:9999/"
+  ws_server_uri: "ws://127.0.0.1:9998/"
+
+sources:
+  - name: simulator
+    connector: Script
+    scan_interval: !!int 1000
+    init_script: |
+      counter = 0
+    items:
+      - name: counter
+        script: |
+          counter = cache('counter', 0) + 1
+          set('counter', counter)
+          return counter
+      - name: temperature
+        script: |
+          return 20 + math.random() * 10
+      - name: pressure
+        script: |
+          return 100 + math.random() * 20
+
+sinks:
+  - name: console
+    connector: Console</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Step 3: Run DIME</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">BASH</span>
+                                <span class="filename">Execute</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>DIME.exe --config quickstart.yaml</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="success-message">
+                            🎉 <strong>Congratulations!</strong> You're now collecting and displaying simulated data.
+                        </div>
+                        
+                        <h3>📚 Core Concepts</h3>
+                        
+                        <h4>1. Sources (Data Inputs)</h4>
+                        <ul>
+                            <li><strong>Polling Sources</strong>: Timer-based reading (PLCs, databases)</li>
+                            <li><strong>Queuing Sources</strong>: Event-driven (MQTT, message queues)</li>
+                            <li><strong>Batch Sources</strong>: Bulk operations (historical data)</li>
+                        </ul>
+                        
+                        <h4>2. Message Format</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">JSON</span>
+                                <span class="filename">Message Structure</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>{
+  "Path": "plc1/temperature",
+  "Value": 72.5,
+  "Timestamp": 1704329420000,
+  "Metadata": {"unit": "F", "quality": "Good"}
+}</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>3. Ring Buffer</h4>
+                        <ul>
+                            <li>Lock-free operation</li>
+                            <li>Parallel sink processing</li>
+                            <li>Configurable size: 2048, 4096, or 8192</li>
+                        </ul>
+                        
+                        <h4>4. Sinks (Data Outputs)</h4>
+                        <ul>
+                            <li>Databases: Postgres, MSSQL, MongoDB</li>
+                            <li>Message brokers: MQTT, SparkplugB, Redis</li>
+                            <li>Monitoring: Console, Logger, InfluxLP</li>
+                            <li>Files: CSVWriter</li>
+                        </ul>
+                        
+                        <h3>🔌 Real Connections</h3>
+                        
+                        <h4>Connect to a Modbus Device</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">modbus.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>sources:
+  - name: plc1
+    connector: ModbusTCP
+    address: "192.168.1.100"
+    port: !!int 502
+    slave: !!int 1
+    scan_interval: !!int 1000
+    init_script: |
+      struct = require('struct')
+    items:
+      - name: temperature
+        address: !!int 40001  # Holding register
+        type: !!int 3         # 3 = holding register
+        count: !!int 2        # 2 registers for float32
+        script: |
+          -- Convert two 16-bit registers to 32-bit float
+          return struct.unpack('&lt;f', struct.pack('&lt;HH', result[0], result[1]))
+      
+      - name: status
+        address: !!int 1      # Coil address
+        type: !!int 1         # 1 = coil
+        count: !!int 1
+
+sinks:
+  - name: console
+    connector: Console
+  - name: database
+    connector: Postgres
+    connection_string: "Host=localhost;Database=plant;Username=dime"</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Connect to OPC-UA Server</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">opcua.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>sources:
+  - name: opcua_server
+    connector: OpcUA
+    address: "localhost"
+    port: !!int 49320
+    timeout: !!int 1000
+    anonymous: !!bool false
+    username: "user"
+    password: "password"
+    items:
+      - name: temperature
+        namespace: !!int 2
+        address: "Simulation Examples.Functions.Random1"
+      - name: pressure
+        namespace: !!int 2
+        address: "Simulation Examples.Functions.Random2"</pre>
+                            </div>
+                        </div>
+                        
+                        <h3>🎯 Common Patterns</h3>
+                        
+                        <h4>Pattern 1: Multi-Protocol Gateway</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">gateway.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre># Collect from multiple protocols, publish to MQTT
+sources:
+  - name: modbus_plc
+    connector: ModbusTCP
+    address: "192.168.1.100"
+    port: !!int 502
+    slave: !!int 1
+    init_script: |
+      struct = require('struct')
+    items:
+      - name: temperature
+        address: !!int 40001
+        type: !!int 3
+        count: !!int 2
+        script: |
+          return struct.unpack('&lt;f', struct.pack('&lt;HH', result[0], result[1]))
+    
+  - name: opcua_scada
+    connector: OpcUA
+    address: "192.168.1.200"
+    port: !!int 4840
+    items:
+      - name: pressure
+        namespace: !!int 2
+        address: "ns=2;i=1002"
+    
+  - name: ethernet_ip
+    connector: EthernetIP
+    type: MicroLogix
+    address: "192.168.1.150"
+    path: "1,0"
+    items:
+      - name: production_count
+        type: int
+        address: "N7:0"
+
+sinks:
+  - name: mqtt_broker
+    connector: MQTT
+    address: "mqtt.plant.local"
+    port: !!int 1883
+    base_topic: "plant/data"</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Pattern 2: Report By Exception (RBE)</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">rbe.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>sources:
+  - name: high_frequency_sensor
+    connector: ModbusTCP
+    address: "192.168.1.100"
+    port: !!int 502
+    scan_interval: !!int 100  # Poll every 100ms
+    rbe: !!bool true          # Only send changes
+    items:
+      - name: vibration
+        address: !!int 40001
+        type: !!int 3
+        count: !!int 2
+        rbe: !!bool true      # Override at item level</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>Pattern 3: Data Transformation</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">transform.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>sources:
+  - name: temperature_sensor
+    connector: ModbusTCP
+    address: "192.168.1.100"
+    port: !!int 502
+    init_script: |
+      struct = require('struct')
+    items:
+      - name: temp_raw
+        address: !!int 40001
+        type: !!int 3
+        count: !!int 2
+        script: |
+          -- Convert registers to float
+          local celsius = struct.unpack('&lt;f', struct.pack('&lt;HH', result[0], result[1]))
+          
+          -- Convert to Fahrenheit
+          local fahrenheit = (celsius * 9/5) + 32
+          
+          -- Add metadata
+          set_metadata('unit', 'F')
+          set_metadata('original_value', celsius)
+          
+          -- Emit multiple values
+          emit('./temperature_c', celsius)
+          emit('./temperature_f', fahrenheit)
+          
+          -- Alert on high temperature
+          if fahrenheit > 100 then
+            emit('./alerts/high_temp', true)
+          end
+          
+          return fahrenheit</pre>
+                            </div>
+                        </div>
+                        
+                        <h3>📊 Monitoring & Diagnostics</h3>
+                        
+                        <h4>Built-in Admin API</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">BASH</span>
+                                <span class="filename">API Endpoints</span>
+                            </div>
+                            <div class="code-content">
+                                <pre># Check connector status
+curl http://localhost:9999/api/connectors
+
+# Get real-time metrics
+curl http://localhost:9999/api/metrics
+
+# View message buffer
+curl http://localhost:9999/api/messages</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>WebSocket Monitoring</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">JavaScript</span>
+                                <span class="filename">Real-time Stream</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>// Real-time data stream
+const ws = new WebSocket('ws://localhost:9998/');
+ws.onmessage = (event) => {
+  const message = JSON.parse(event.data);
+  console.log(\`\${message.Path}: \${message.Value}\`);
+};</pre>
+                            </div>
+                        </div>
+                        
+                        <h3>✅ Best Practices</h3>
+                        
+                        <h4>1. Use YAML Anchors</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">anchors.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre># Define reusable configuration
+modbus_defaults: &modbus_defaults
+  connector: ModbusTCP
+  port: !!int 502
+  timeout: !!int 3000
+  scan_interval: !!int 1000
+
+sources:
+  - <<: *modbus_defaults
+    name: plc1
+    address: "192.168.1.100"
+    
+  - <<: *modbus_defaults
+    name: plc2
+    address: "192.168.1.101"</pre>
+                            </div>
+                        </div>
+                        
+                        <h4>2. Implement Error Handling</h4>
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-type">YAML</span>
+                                <span class="filename">error-handling.yaml</span>
+                            </div>
+                            <div class="code-content">
+                                <pre>items:
+  - name: critical_sensor
+    address: !!int 40001
+    type: !!int 3
+    count: !!int 1
+    script: |
+      -- Validate data
+      if result == nil then
+        emit('./errors/null_reading', true)
+        return cache('last_good_value', 0)
+      end
+      
+      -- Range check
+      local value = result[0]
+      if value < 0 or value > 100 then
+        emit('./errors/out_of_range', value)
+        return cache('last_good_value', 0)
+      end
+      
+      -- Store good value
+      set('last_good_value', value)
+      return value</pre>
+                            </div>
+                        </div>
+                        
+                        <h3>🚦 Production Checklist</h3>
+                        <ul class="checklist">
+                            <li>☐ Connection Testing: Verify all equipment is accessible</li>
+                            <li>☐ Data Validation: Confirm values match expected ranges</li>
+                            <li>☐ RBE Configuration: Enable to reduce network traffic</li>
+                            <li>☐ Error Handling: Add scripts for data validation</li>
+                            <li>☐ Monitoring Setup: Configure admin API and alerts</li>
+                            <li>☐ Backup Strategy: Save configurations to version control</li>
+                            <li>☐ Performance Testing: Verify throughput meets requirements</li>
+                            <li>☐ Security Review: Enable authentication where needed</li>
+                            <li>☐ Documentation: Document all custom scripts and logic</li>
+                            <li>☐ Rollback Plan: Keep previous configuration available</li>
+                        </ul>
                         
                         <h2>Storage Pipeline</h2>
                         <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
@@ -3714,22 +4153,6 @@ sinks:
                         <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
                         
                         <h2>Anomaly Detection Pipeline</h2>
-                        <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
-                    </section>
-                    
-                    <div style="margin-top: 3rem;">
-                        <button class="btn btn-secondary" onclick="showConnectorGrid()">← Back to Connectors</button>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function generateApiReferenceDoc() {
-            return `
-                <div class="doc-page">
-                    <h1>📡 API Reference</h1>
-                    
-                    <section class="doc-section">
                         <p><a href="https://disneyworld.disney.go.com/" target="_blank">Customer Portal Login</a></p>
                     </section>
                     
