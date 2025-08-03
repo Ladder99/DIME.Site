@@ -525,13 +525,11 @@
                     
                 });
                 
-                // Mark animation as complete after compression finishes + 0.5 seconds
+                // Mark animation as complete after compression finishes (removed 0.5 second delay)
                 if (closeEase >= 1 && !animationComplete) {
-                    setTimeout(() => {
-                        animationComplete = true;
-                        fadeOutStarted = true;
-                        fadeOutStartTime = time;
-                    }, 500);
+                    animationComplete = true;
+                    fadeOutStarted = true;
+                    fadeOutStartTime = time;
                 }
             }
             
@@ -539,7 +537,7 @@
             
             // Fade out all geometry when animation is complete
             if (fadeOutStarted) {
-                const fadeTime = (time - fadeOutStartTime) * 1.0; // 1 second fade
+                const fadeTime = (time - fadeOutStartTime) * 0.67; // Slower fade (1.5 seconds instead of 1)
                 const fadeEase = Math.min(fadeTime, 1);
                 const opacity = 1 - fadeEase;
                 
@@ -551,8 +549,8 @@
                 // Fade out outline
                 outline.material.opacity = outline.material.opacity * opacity;
                 
-                // Start image replacement at 0.2 seconds (much earlier in the fade)
-                if (fadeEase >= 0.2 && !imageReplaced) {
+                // Start image replacement at 0.1 seconds (even earlier for longer overlap)
+                if (fadeEase >= 0.1 && !imageReplaced) {
                     imageReplaced = true;
                     replaceCanvasWithImage();
                 }
@@ -612,7 +610,7 @@
             img.style.height = '100%';
             img.style.display = 'block';
             img.style.opacity = '0';
-            img.style.transition = 'opacity 0.8s ease-in-out';
+            img.style.transition = 'opacity 1.3s ease-in-out'; // Slower fade-in by 500ms
             img.style.objectFit = 'contain';
             img.style.position = 'absolute';
             img.style.top = '0';
@@ -624,7 +622,7 @@
             canvas.style.top = '0';
             canvas.style.left = '0';
             canvas.style.zIndex = '2'; // Canvas on top
-            canvas.style.transition = 'opacity 0.8s ease-in-out'; // Add transition to canvas
+            canvas.style.transition = 'opacity 1.3s ease-in-out'; // Match slower fade timing
             
             // Wrap canvas in the wrapper
             canvas.parentElement.insertBefore(wrapper, canvas);
