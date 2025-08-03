@@ -54,22 +54,6 @@
                 handleSwipe();
             }, false);
             
-            function handleSwipe() {
-                const swipeThreshold = 50;
-                const diff = touchStartX - touchEndX;
-                
-                if (Math.abs(diff) > swipeThreshold) {
-                    if (diff > 0) {
-                        // Swiped left - next image
-                        currentIndex = (currentIndex + 1) % images.length;
-                    } else {
-                        // Swiped right - previous image
-                        currentIndex = (currentIndex - 1 + images.length) % images.length;
-                    }
-                    img.src = images[currentIndex];
-                }
-            }
-            
             // Add indicator dots
             const indicators = document.createElement('div');
             indicators.style.position = 'absolute';
@@ -89,6 +73,7 @@
                 dot.style.background = index === 0 ? 'white' : 'transparent';
                 dot.style.cursor = 'pointer';
                 dot.style.transition = 'background 0.3s';
+                dot.style.boxShadow = '0 0 4px rgba(0,0,0,0.5)';
                 indicators.appendChild(dot);
             });
             
@@ -102,11 +87,21 @@
                 });
             }
             
-            // Update indicators after swipe
-            const originalHandleSwipe = handleSwipe;
-            handleSwipe = function() {
-                originalHandleSwipe();
-                updateIndicators();
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // Swiped left - next image
+                        currentIndex = (currentIndex + 1) % images.length;
+                    } else {
+                        // Swiped right - previous image
+                        currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    }
+                    img.src = images[currentIndex];
+                    updateIndicators();
+                }
             };
             
             return;
