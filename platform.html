@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="icon" type="image/png" href="assets/images/dime_logo_graphic_real_white.png">
     <link rel="apple-touch-icon" href="assets/images/dime_logo_graphic_real_white.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -50,8 +51,7 @@
     <section class="architecture-diagram">
         <div class="container">
             <div class="architecture-interactive">
-                <img src="assets/images/workbench_1.png" alt="DIME Platform Architecture" class="architecture-image">
-                <p class="architecture-caption">Click each component below to explore in detail</p>
+                <canvas id="architecture-canvas" style="width: 100%; height: 600px; display: block;"></canvas>
             </div>
         </div>
     </section>
@@ -470,5 +470,6 @@
 
     <script src="js/main.js"></script>
     <script src="js/platform-navigation.js"></script>
+    <script src="js/architecture-animation.js"></script>
 </body>
 </html>

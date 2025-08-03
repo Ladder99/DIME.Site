@@ -107,6 +107,7 @@ h6 { font-size: 1rem; }
     width: auto;
 }
 
+
 .nav-menu {
     display: flex;
     list-style: none;
@@ -3603,4 +3604,26 @@ footer {
 
 .cta-buttons .btn {
     min-width: 180px;
+}
+
+/* Architecture Animation Canvas - Responsive */
+#architecture-canvas {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+}
+
+/* Mobile responsiveness for canvas */
+@media (max-width: 768px) {
+    #architecture-canvas {
+        height: 400px !important;
+    }
+    
+    .architecture-section {
+        padding: var(--space-xl) 0;
+    }
+    
+    .architecture-content {
+        padding: 0 var(--space-md);
+    }
 }
