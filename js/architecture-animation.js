@@ -36,7 +36,14 @@
             // Setup simple swipeable gallery (no hotspots on mobile)
             const images = [
                 'assets/images/workbench_1.png',
-                'assets/images/htm_2.png'
+                'assets/images/ai_integration_1.png',
+                'assets/images/htm_2.png',
+                'assets/images/advanced_monitoring_3.png',
+                'assets/images/advanced_connector_configuration_2.png',
+                'assets/images/advanced_connector_configuration_1.png',
+                'assets/images/advanced_connector_configuration_3.png',
+                'assets/images/advanced_connector_configuration_4.png',
+                'assets/images/advanced_connector_configuration_with_schema_validation.png'
             ];
             
             let currentIndex = 0;
@@ -633,8 +640,36 @@
                         hotspotsKey: 'workbench_1.png'
                     },
                     {
+                        src: 'assets/images/ai_integration_1.png',
+                        hotspotsKey: 'ai_integration_1.png'
+                    },
+                    {
                         src: 'assets/images/htm_2.png',
                         hotspotsKey: 'htm_2.png'
+                    },
+                    {
+                        src: 'assets/images/advanced_monitoring_3.png',
+                        hotspotsKey: 'advanced_monitoring_3.png'
+                    },
+                    {
+                        src: 'assets/images/advanced_connector_configuration_2.png',
+                        hotspotsKey: 'advanced_connector_configuration_2.png'
+                    },
+                    {
+                        src: 'assets/images/advanced_connector_configuration_1.png',
+                        hotspotsKey: 'advanced_connector_configuration_1.png'
+                    },
+                    {
+                        src: 'assets/images/advanced_connector_configuration_3.png',
+                        hotspotsKey: 'advanced_connector_configuration_3.png'
+                    },
+                    {
+                        src: 'assets/images/advanced_connector_configuration_4.png',
+                        hotspotsKey: 'advanced_connector_configuration_4.png'
+                    },
+                    {
+                        src: 'assets/images/advanced_connector_configuration_with_schema_validation.png',
+                        hotspotsKey: 'advanced_connector_configuration_with_schema_validation.png'
                     }
                 ];
                 

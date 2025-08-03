@@ -50,6 +50,17 @@
                 description: 'Live and historical timeseries chart with a variety of statistical investigative tools.'
             }
         ],
+        'ai_integration_1.png': [
+            {
+                id: 'ai-chart-analysis',
+                left: '0.5%',
+                top: '43%',
+                width: '99.2%',
+                height: '56%',
+                title: 'AI Chart Analysis',
+                description: 'Interactive AI-powered analytics interface using OpenAI API integration. Ask questions about patterns, anomalies, or trends in natural language and receive intelligent insights. The AI can analyze multiple chart types simultaneously and provide correlations, predictions, and actionable recommendations based on your industrial data.'
+            }
+        ],
         'htm_2.png': [
             {
                 id: 'keys-selector',
@@ -95,6 +106,108 @@
                 height: '44%',
                 title: 'Temporal Memory Patterns',
                 description: 'Grid of temporal memory states showing how HTM learns and recognizes sequences over time. Each cell represents a temporal pattern with color indicating activation strength.'
+            }
+        ],
+        'advanced_monitoring_3.png': [
+            {
+                id: 'message-timeline-header',
+                left: '0%',
+                top: '8%',
+                width: '100%',
+                height: '12%',
+                title: 'Message Timeline Controls',
+                description: 'Advanced filtering and view controls for real-time message monitoring. Includes regex pattern matching, system message filters, zoom controls, and freeze view options.'
+            },
+            {
+                id: 'trends-graph',
+                left: '16.5%',
+                top: '23%',
+                width: '82%',
+                height: '18%',
+                title: 'Real-time Trends Visualization',
+                description: 'Live trend graph showing message flow patterns, system activity levels, and data throughput over time.'
+            },
+            {
+                id: 'captured-messages',
+                left: '1%',
+                top: '24%',
+                width: '16%',
+                height: '77%',
+                title: 'Captured Messages List',
+                description: 'Filtered list of captured messages with timestamps and source information. Click to expand and view detailed message content.'
+            },
+            {
+                id: 'message-timeline',
+                left: '16.5%',
+                top: '40%',
+                width: '81%',
+                height: '58%',
+                title: 'Interactive Message Timeline',
+                description: 'Wireshark-like view of industrial data packets flowing through DIME. Each row represents a different data stream with color-coded message types. Hover to see details, click to inspect message contents.'
+            }
+        ],
+        'advanced_connector_configuration_2.png': [
+            {
+                id: 'sources-panel',
+                left: '1%',
+                top: '16%',
+                width: '48%',
+                height: '82%',
+                title: 'Data Sources Configuration',
+                description: 'Configure multiple data sources including HAAS, Modbus, Ethernet/IP, and others. Each source is fully configurable.'
+            },
+            {
+                id: 'sinks-panel',
+                left: '50%',
+                top: '16%',
+                width: '48%',
+                height: '82%',
+                title: 'Data Sinks Configuration',
+                description: 'Configure data destinations including console output, MQTT brokers, HTTP servers, databases, and others. Set up filters, data transformation rules, and other properties for each sink.'
+            }
+        ],
+        'advanced_connector_configuration_1.png': [
+            {
+                id: 'connector-settings-section',
+                left: '30%',
+                top: '10%',
+                width: '40%',
+                height: '77%',
+                title: 'Connector Settings',
+                description: 'Protocol-specific settings including PLC type selection, IP addresses, connection paths, and logging configuration. Supports multiple industrial protocols with intelligent defaults.'
+            }
+        ],
+        'advanced_connector_configuration_3.png': [
+            {
+                id: 'items-list',
+                left: '11%',
+                top: '9%',
+                width: '79%',
+                height: '74%',
+                title: 'Data Items List',
+                description: 'List of configured data points for that particular connector type.  Each item can be individually edited or deleted.'
+            }
+        ],
+        'advanced_connector_configuration_4.png': [
+            {
+                id: 'basic-properties',
+                left: '31.5%',
+                top: '8.5%',
+                width: '37%',
+                height: '71%',
+                title: 'Data Item Editor',
+                description: 'Configure item name and path, status, data address or tag path for the specific protocol.  Add transformation scripts, report by exception, and event triggers among other properties.'
+            }
+        ],
+        'advanced_connector_configuration_with_schema_validation.png': [
+            {
+                id: 'yaml-editor',
+                left: '0.5%',
+                top: '7%',
+                width: '99%',
+                height: '92%',
+                title: 'YAML Configuration Editor',
+                description: 'Advanced YAML editor with syntax highlighting, line numbers, intelligent auto-completion, and validation. Configure sources, sinks, transformations, and scripting logic for complex data integration scenarios.'
             }
         ]
         // Add more image configurations here as needed
