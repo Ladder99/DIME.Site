@@ -12,8 +12,10 @@
             return;
         }
         
-        // Skip animation on mobile and show swipeable image gallery
-        if (window.innerWidth < 768) {
+        // Skip animation and show image gallery immediately
+        // (Comment out the condition to always show gallery)
+        // if (window.innerWidth < 768) {
+        if (true) {  // Always show gallery instead of animation
             canvas.style.display = 'none';
             
             // Create wrapper for gallery
@@ -33,19 +35,30 @@
             wrapper.appendChild(img);
             canvas.parentElement.insertBefore(wrapper, canvas);
             
-            // Setup simple swipeable gallery (no hotspots on mobile)
-            const images = [
-                'assets/images/workbench_1.png',
-                'assets/images/ai_integration_1.png',
-                'assets/images/htm_2.png',
-                'assets/images/advanced_monitoring_3.png',
-                'assets/images/advanced_connector_configuration_2.png',
-                'assets/images/advanced_connector_configuration_1.png',
-                'assets/images/advanced_connector_configuration_3.png',
-                'assets/images/advanced_connector_configuration_4.png',
-                'assets/images/advanced_connector_configuration_with_schema_validation.png'
+            // Setup gallery with hotspots on desktop, simple swipe on mobile
+            const isMobile = window.innerWidth < 768;
+            
+            // Image gallery configuration
+            const galleryImages = [
+                { src: 'assets/images/workbench_1.png', hotspotsKey: 'workbench_1.png' },
+                { src: 'assets/images/ai_integration_1.png', hotspotsKey: 'ai_integration_1.png' },
+                { src: 'assets/images/htm_2.png', hotspotsKey: 'htm_2.png' },
+                { src: 'assets/images/advanced_monitoring_3.png', hotspotsKey: 'advanced_monitoring_3.png' },
+                { src: 'assets/images/advanced_connector_configuration_2.png', hotspotsKey: 'advanced_connector_configuration_2.png' },
+                { src: 'assets/images/advanced_connector_configuration_1.png', hotspotsKey: 'advanced_connector_configuration_1.png' },
+                { src: 'assets/images/advanced_connector_configuration_3.png', hotspotsKey: 'advanced_connector_configuration_3.png' },
+                { src: 'assets/images/advanced_connector_configuration_4.png', hotspotsKey: 'advanced_connector_configuration_4.png' },
+                { src: 'assets/images/advanced_connector_configuration_with_schema_validation.png', hotspotsKey: 'advanced_connector_configuration_with_schema_validation.png' }
             ];
             
+            // For desktop, use the full gallery with hotspots
+            if (!isMobile && window.createImageGallery) {
+                const gallery = window.createImageGallery(wrapper, galleryImages);
+                return;
+            }
+            
+            // For mobile, simple swipeable gallery
+            const images = galleryImages.map(item => item.src);
             let currentIndex = 0;
             
             // Add touch/swipe support
