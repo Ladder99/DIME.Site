@@ -38,17 +38,53 @@
             // Setup gallery with hotspots on desktop, simple swipe on mobile
             const isMobile = window.innerWidth < 768;
             
-            // Image gallery configuration
+            // Image gallery configuration with captions
             const galleryImages = [
-                { src: 'assets/images/workbench_1.png', hotspotsKey: 'workbench_1.png' },
-                { src: 'assets/images/ai_integration_1.png', hotspotsKey: 'ai_integration_1.png' },
-                { src: 'assets/images/htm_2.png', hotspotsKey: 'htm_2.png' },
-                { src: 'assets/images/advanced_monitoring_3.png', hotspotsKey: 'advanced_monitoring_3.png' },
-                { src: 'assets/images/advanced_connector_configuration_2.png', hotspotsKey: 'advanced_connector_configuration_2.png' },
-                { src: 'assets/images/advanced_connector_configuration_1.png', hotspotsKey: 'advanced_connector_configuration_1.png' },
-                { src: 'assets/images/advanced_connector_configuration_3.png', hotspotsKey: 'advanced_connector_configuration_3.png' },
-                { src: 'assets/images/advanced_connector_configuration_4.png', hotspotsKey: 'advanced_connector_configuration_4.png' },
-                { src: 'assets/images/advanced_connector_configuration_with_schema_validation.png', hotspotsKey: 'advanced_connector_configuration_with_schema_validation.png' }
+                { 
+                    src: 'assets/images/workbench_1.png', 
+                    hotspotsKey: 'workbench_1.png',
+                    caption: 'Real-Time Factory Workbench - Monitor assets, analyze events, and detect anomalies across your entire operation'
+                },
+                { 
+                    src: 'assets/images/ai_integration_1.png', 
+                    hotspotsKey: 'ai_integration_1.png',
+                    caption: 'AI-Powered Analytics - Natural language queries and intelligent insights using OpenAI integration'
+                },
+                { 
+                    src: 'assets/images/htm_2.png', 
+                    hotspotsKey: 'htm_2.png',
+                    caption: 'HTM Anomaly Detection - Hierarchical Temporal Memory for real-time pattern recognition and anomaly detection'
+                },
+                { 
+                    src: 'assets/images/advanced_monitoring_3.png', 
+                    hotspotsKey: 'advanced_monitoring_3.png',
+                    caption: 'Message Timeline Inspector - Wireshark-like view of industrial data packets flowing through DIME'
+                },
+                { 
+                    src: 'assets/images/advanced_connector_configuration_2.png', 
+                    hotspotsKey: 'advanced_connector_configuration_2.png',
+                    caption: 'Source & Sink Configuration - Visual configuration of data sources and destinations with drag-and-drop simplicity'
+                },
+                { 
+                    src: 'assets/images/advanced_connector_configuration_1.png', 
+                    hotspotsKey: 'advanced_connector_configuration_1.png',
+                    caption: 'Protocol-Specific Settings - Configure industrial protocols with intelligent defaults and validation'
+                },
+                { 
+                    src: 'assets/images/advanced_connector_configuration_3.png', 
+                    hotspotsKey: 'advanced_connector_configuration_3.png',
+                    caption: 'Data Items Management - Define and manage individual data points with transformation rules'
+                },
+                { 
+                    src: 'assets/images/advanced_connector_configuration_4.png', 
+                    hotspotsKey: 'advanced_connector_configuration_4.png',
+                    caption: 'Item Editor - Configure data addresses, transformations, and event triggers for each data point'
+                },
+                { 
+                    src: 'assets/images/advanced_connector_configuration_with_schema_validation.png', 
+                    hotspotsKey: 'advanced_connector_configuration_with_schema_validation.png',
+                    caption: 'YAML Configuration Editor - Advanced configuration with syntax highlighting and real-time validation'
+                }
             ];
             
             // For desktop, use the full gallery with hotspots
@@ -57,9 +93,26 @@
                 return;
             }
             
-            // For mobile, simple swipeable gallery
+            // For mobile, simple swipeable gallery with captions
             const images = galleryImages.map(item => item.src);
+            const captions = galleryImages.map(item => item.caption);
             let currentIndex = 0;
+            
+            // Add caption element for mobile
+            const captionDiv = document.createElement('div');
+            captionDiv.style.position = 'absolute';
+            captionDiv.style.bottom = '60px';
+            captionDiv.style.left = '10px';
+            captionDiv.style.right = '10px';
+            captionDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            captionDiv.style.color = 'white';
+            captionDiv.style.padding = '8px 12px';
+            captionDiv.style.borderRadius = '4px';
+            captionDiv.style.fontSize = '12px';
+            captionDiv.style.textAlign = 'center';
+            captionDiv.style.zIndex = '15';
+            captionDiv.textContent = captions[0];
+            wrapper.appendChild(captionDiv);
             
             // Add touch/swipe support
             let touchStartX = 0;
@@ -120,6 +173,7 @@
                         currentIndex = (currentIndex - 1 + images.length) % images.length;
                     }
                     img.src = images[currentIndex];
+                    captionDiv.textContent = captions[currentIndex];
                     updateIndicators();
                 }
             };

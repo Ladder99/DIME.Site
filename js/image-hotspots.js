@@ -460,6 +460,7 @@
         let currentHotspots = null;
         const img = wrapper.querySelector('img');
         let indicators; // Will be defined later
+        let captionElement; // Will be created later
         
         // Update indicator dots
         function updateIndicators() {
@@ -468,6 +469,13 @@
             dots.forEach((dot, index) => {
                 dot.style.background = index === currentIndex ? 'white' : 'transparent';
             });
+        }
+        
+        // Update caption
+        function updateCaption(caption) {
+            if (captionElement && caption) {
+                captionElement.textContent = caption;
+            }
         }
         
         function showImage(index) {
@@ -480,6 +488,9 @@
             // Update image
             const imageConfig = images[index];
             img.src = imageConfig.src;
+            
+            // Update caption
+            updateCaption(imageConfig.caption);
             
             // Wait for image to load before adding hotspots
             const addHotspotsForImage = () => {
@@ -517,6 +528,7 @@
         prevBtn.style.padding = '10px 15px';
         prevBtn.style.cursor = 'pointer';
         prevBtn.style.fontSize = '20px';
+        prevBtn.style.transition = 'opacity 0.3s ease';
         // Hide on mobile
         if (window.innerWidth < 768) {
             prevBtn.style.display = 'none';
@@ -541,6 +553,7 @@
         nextBtn.style.padding = '10px 15px';
         nextBtn.style.cursor = 'pointer';
         nextBtn.style.fontSize = '20px';
+        nextBtn.style.transition = 'opacity 0.3s ease';
         // Hide on mobile
         if (window.innerWidth < 768) {
             nextBtn.style.display = 'none';
@@ -591,6 +604,7 @@
         indicators.style.zIndex = '20';
         indicators.style.display = 'flex';
         indicators.style.gap = '10px';
+        indicators.style.transition = 'opacity 0.3s ease';
         
         images.forEach((_, index) => {
             const dot = document.createElement('button');
@@ -607,11 +621,66 @@
         
         wrapper.appendChild(indicators);
         
+        // Add caption element
+        captionElement = document.createElement('div');
+        captionElement.className = 'gallery-caption';
+        captionElement.style.position = 'absolute';
+        captionElement.style.bottom = '60px';
+        captionElement.style.left = '50%';
+        captionElement.style.transform = 'translateX(-50%)';
+        captionElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        captionElement.style.color = 'white';
+        captionElement.style.padding = '10px 20px';
+        captionElement.style.borderRadius = '6px';
+        captionElement.style.fontSize = '14px';
+        captionElement.style.maxWidth = '80%';
+        captionElement.style.textAlign = 'center';
+        captionElement.style.zIndex = '15';
+        captionElement.style.lineHeight = '1.4';
+        captionElement.style.transition = 'opacity 0.3s ease';
+        captionElement.style.opacity = '1';
+        captionElement.style.pointerEvents = 'none';  // Allow clicks to pass through
+        wrapper.appendChild(captionElement);
+        
+        // Add hover effect to fade out caption, nav buttons, and indicators
+        wrapper.addEventListener('mouseenter', () => {
+            if (captionElement) {
+                captionElement.style.opacity = '0';
+            }
+            if (prevBtn) {
+                prevBtn.style.opacity = '0.2';
+            }
+            if (nextBtn) {
+                nextBtn.style.opacity = '0.2';
+            }
+            if (indicators) {
+                indicators.style.opacity = '0.2';
+            }
+        });
+        
+        wrapper.addEventListener('mouseleave', () => {
+            if (captionElement) {
+                captionElement.style.opacity = '1';
+            }
+            if (prevBtn) {
+                prevBtn.style.opacity = '1';
+            }
+            if (nextBtn) {
+                nextBtn.style.opacity = '1';
+            }
+            if (indicators) {
+                indicators.style.opacity = '1';
+            }
+        });
+        
         // Don't re-initialize first image since it's already loaded
         // Just add hotspots for the already loaded first image
         if (images[0].hotspotsKey) {
             currentHotspots = addImageHotspots(wrapper, img, images[0].hotspotsKey);
         }
+        
+        // Set initial caption
+        updateCaption(images[0].caption);
         updateIndicators();
         
         return {
